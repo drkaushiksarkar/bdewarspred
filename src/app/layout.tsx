@@ -3,6 +3,7 @@ import './globals.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster";
+import SessionProvider from '@/components/providers/session-provider';
 
 export const metadata: Metadata = {
   title: 'EWARS Bangladesh',
@@ -22,8 +23,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className={cn('font-body antialiased')}>
-        {children}
-        <Toaster />
+        <SessionProvider>
+          {children}
+          <Toaster />
+        </SessionProvider>
       </body>
     </html>
   );
