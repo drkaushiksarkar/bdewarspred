@@ -1,0 +1,162 @@
+'use client';
+
+import * as React from 'react';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { HelpCircle, LogOut, PanelLeft, Search, Settings, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import AppSidebar from './app-sidebar';
+import HelpDrawer from './help-drawer';
+import { searchAction } from '@/app/actions';
+import PartnerLogos from './partner-logos';
+
+export default function Header() {
+  const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
+  const [searchResult, setSearchResult] = React.useState<string | null>(null);
+  const [searchError, setSearchError] = React.useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+
+    setIsSearching(true);
+    setSearchError(null);
+    setSearchResult(null);
+    setIsDialogOpen(true);
+
+    const result = await searchAction(searchQuery);
+
+    if (result.success && result.data) {
+      setSearchResult(result.data.answer);
+    } else {
+      setSearchError(result.error || 'An unknown error occurred.');
+    }
+    setIsSearching(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  return (
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button size="icon" variant="outline" className="sm:hidden">
+            <PanelLeft className="h-5 w-5" />
+            <span className="sr-only">Toggle Menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="sm:max-w-xs">
+          <AppSidebar />
+        </SheetContent>
+      </Sheet>
+      <div className="hidden md:flex">
+        <PartnerLogos />
+      </div>
+      <div className="relative ml-auto flex-1 md:grow-0">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Ask a question about the data..."
+          className="w-full rounded-lg bg-secondary pl-8 md:w-[200px] lg:w-[320px]"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={isSearching}
+        />
+      </div>
+      <HelpDrawer />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="overflow-hidden rounded-full"
+          >
+            <Avatar>
+              {userAvatar && (
+                <AvatarImage
+                  src={userAvatar.imageUrl}
+                  alt={userAvatar.description}
+                  width={40}
+                  height={40}
+                  data-ai-hint={userAvatar.imageHint}
+                />
+              )}
+              <AvatarFallback>AV</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Logout</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>AI Search Results</DialogTitle>
+            <DialogDescription>
+              Answer based on the data available on the dashboard.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="min-h-[120px] py-4">
+            {isSearching ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <span className="text-muted-foreground">Analyzing data...</span>
+              </div>
+            ) : searchError ? (
+              <div className="text-destructive">{searchError}</div>
+            ) : (
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <p className="text-foreground">{searchResult}</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </header>
+  );
+}

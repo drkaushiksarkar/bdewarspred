@@ -1,0 +1,3435 @@
+[
+  {
+    "date": "2024-12-30",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Bagerhat",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Bhola",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 6,
+    "uncertainty": [
+      5,
+      9
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 6,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      2,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Bogura",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 40,
+    "uncertainty": [
+      27,
+      64
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 38,
+    "uncertainty": [
+      27,
+      62
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 30,
+    "uncertainty": [
+      21,
+      48
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 27,
+    "uncertainty": [
+      19,
+      42
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 23,
+    "uncertainty": [
+      16,
+      36
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 21,
+    "uncertainty": [
+      15,
+      33
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 21,
+    "uncertainty": [
+      15,
+      32
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 21,
+    "uncertainty": [
+      15,
+      31
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 21,
+    "uncertainty": [
+      15,
+      32
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 21,
+    "uncertainty": [
+      15,
+      32
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 21,
+    "uncertainty": [
+      15,
+      32
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Chandpur",
+    "actual": null,
+    "predicted": 22,
+    "uncertainty": [
+      16,
+      33
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 60,
+    "uncertainty": [
+      45,
+      87
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 52,
+    "uncertainty": [
+      39,
+      73
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 47,
+    "uncertainty": [
+      36,
+      65
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 44,
+    "uncertainty": [
+      34,
+      61
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 43,
+    "uncertainty": [
+      33,
+      59
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 42,
+    "uncertainty": [
+      32,
+      57
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 41,
+    "uncertainty": [
+      32,
+      56
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 40,
+    "uncertainty": [
+      32,
+      55
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 40,
+    "uncertainty": [
+      31,
+      54
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 39,
+    "uncertainty": [
+      31,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 39,
+    "uncertainty": [
+      31,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Chattogram",
+    "actual": null,
+    "predicted": 39,
+    "uncertainty": [
+      30,
+      52
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 40,
+    "uncertainty": [
+      29,
+      59
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 38,
+    "uncertainty": [
+      28,
+      57
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 37,
+    "uncertainty": [
+      27,
+      55
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 37,
+    "uncertainty": [
+      27,
+      55
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 36,
+    "uncertainty": [
+      27,
+      55
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 36,
+    "uncertainty": [
+      26,
+      54
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 36,
+    "uncertainty": [
+      26,
+      54
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 35,
+    "uncertainty": [
+      26,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 35,
+    "uncertainty": [
+      26,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 35,
+    "uncertainty": [
+      25,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 35,
+    "uncertainty": [
+      25,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Cox's Bazar",
+    "actual": null,
+    "predicted": 35,
+    "uncertainty": [
+      25,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 12,
+    "uncertainty": [
+      8,
+      19
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      13
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      18
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 12,
+    "uncertainty": [
+      8,
+      18
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      16
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      16
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      16
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      15
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Cumilla",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      15
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 385,
+    "uncertainty": [
+      264,
+      622
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 378,
+    "uncertainty": [
+      256,
+      618
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 359,
+    "uncertainty": [
+      245,
+      586
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 348,
+    "uncertainty": [
+      237,
+      569
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 342,
+    "uncertainty": [
+      234,
+      560
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 342,
+    "uncertainty": [
+      233,
+      560
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 341,
+    "uncertainty": [
+      233,
+      559
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 341,
+    "uncertainty": [
+      233,
+      559
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 340,
+    "uncertainty": [
+      232,
+      558
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 339,
+    "uncertainty": [
+      232,
+      557
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 338,
+    "uncertainty": [
+      231,
+      555
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Dhaka",
+    "actual": null,
+    "predicted": 337,
+    "uncertainty": [
+      230,
+      554
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      2,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Dinajpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 27,
+    "uncertainty": [
+      20,
+      43
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 15,
+    "uncertainty": [
+      11,
+      23
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 13,
+    "uncertainty": [
+      10,
+      20
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 12,
+    "uncertainty": [
+      9,
+      19
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      8,
+      15
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      11
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 6,
+    "uncertainty": [
+      5,
+      9
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Faridpur",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      6,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 6,
+    "uncertainty": [
+      4,
+      9
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Feni",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 16,
+    "uncertainty": [
+      11,
+      25
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 15,
+    "uncertainty": [
+      11,
+      24
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 13,
+    "uncertainty": [
+      9,
+      20
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 12,
+    "uncertainty": [
+      8,
+      18
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      15
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      15
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 9,
+    "uncertainty": [
+      7,
+      14
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 9,
+    "uncertainty": [
+      7,
+      14
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      14
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      14
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Jashore",
+    "actual": null,
+    "predicted": 9,
+    "uncertainty": [
+      7,
+      13
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 58,
+    "uncertainty": [
+      40,
+      97
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 41,
+    "uncertainty": [
+      28,
+      66
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 38,
+    "uncertainty": [
+      27,
+      61
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 37,
+    "uncertainty": [
+      26,
+      59
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 36,
+    "uncertainty": [
+      25,
+      58
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 35,
+    "uncertainty": [
+      25,
+      57
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 35,
+    "uncertainty": [
+      25,
+      56
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 34,
+    "uncertainty": [
+      24,
+      55
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 34,
+    "uncertainty": [
+      24,
+      54
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 34,
+    "uncertainty": [
+      24,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 33,
+    "uncertainty": [
+      24,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Khulna",
+    "actual": null,
+    "predicted": 33,
+    "uncertainty": [
+      24,
+      53
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 9,
+    "uncertainty": [
+      7,
+      14
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 7,
+    "uncertainty": [
+      5,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 7,
+    "uncertainty": [
+      5,
+      9
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 6,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Madaripur",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Moulvibazar",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      15
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 7,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 7,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 7,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 7,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Mymensingh",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      11
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Nilphamari",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 6,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      3,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      3,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Noakhali",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      3,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      2,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Pabna",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 15,
+    "uncertainty": [
+      10,
+      23
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 12,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      7,
+      14
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 10,
+    "uncertainty": [
+      8,
+      15
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      16
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      15
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 9,
+    "uncertainty": [
+      7,
+      13
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      11
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      11
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Patuakhali",
+    "actual": null,
+    "predicted": 8,
+    "uncertainty": [
+      6,
+      10
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 12,
+    "uncertainty": [
+      9,
+      19
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      18
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      18
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      18
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      17
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      16
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      16
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      16
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Rajshahi",
+    "actual": null,
+    "predicted": 11,
+    "uncertainty": [
+      8,
+      16
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      4
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Rangamati",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Rangpur",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      0
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      4,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Satkhira",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 0,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      0,
+      1
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 1,
+    "uncertainty": [
+      1,
+      2
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 2,
+    "uncertainty": [
+      1,
+      3
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Sylhet",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      5
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2024-12-30",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-06",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 6,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-13",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-20",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      8
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-01-27",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      4,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-03",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 5,
+    "uncertainty": [
+      3,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-10",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      7
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-17",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      3,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-02-24",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 4,
+    "uncertainty": [
+      2,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-03",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-10",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      6
+    ],
+    "is_outbreak": false
+  },
+  {
+    "date": "2025-03-17",
+    "district": "Tangail",
+    "actual": null,
+    "predicted": 3,
+    "uncertainty": [
+      2,
+      6
+    ],
+    "is_outbreak": false
+  }
+]
+  
