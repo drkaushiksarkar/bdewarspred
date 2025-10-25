@@ -31,6 +31,7 @@ export default function MalariaMap() {
     const mapRef = useRef<Map | null>(null);
     const [geojsonData, setGeojsonData] = useState<any>(null);
     const [species, setSpecies] = useState<MalariaSpecies>('pv_rate');
+    const [isContainerReady, setIsContainerReady] = useState(false);
 
     const colorStops: [number, string][] = [
         [-1e-5, '#2c7bb6'],
@@ -93,8 +94,24 @@ export default function MalariaMap() {
         loadData();
     }, []);
 
+    // Wait for container to be ready
     useEffect(() => {
-        if (!containerRef.current || !geojsonData) return;
+        if (!containerRef.current) return;
+
+        const container = containerRef.current;
+
+        // Use setTimeout to ensure the container has been painted
+        const timer = setTimeout(() => {
+            if (container.offsetWidth > 0 && container.offsetHeight > 0) {
+                setIsContainerReady(true);
+            }
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        if (!containerRef.current || !geojsonData || !isContainerReady) return;
         if (mapRef.current) mapRef.current.remove();
 
         const map = new maplibregl.Map({
@@ -128,12 +145,21 @@ export default function MalariaMap() {
                 data: geojsonData
             });
 
+            // Create fill color expression
+            const fillColorExpression = [
+                'interpolate',
+                ['linear'],
+                ['get', species],
+                ...colorStops.flatMap(([value, color]) => [value, color])
+            ];
+
             map.addLayer({
                 id: 'malaria-fill',
                 type: 'fill',
                 source: 'malaria-data',
                 paint: {
                     'fill-opacity': 0.7,
+                    'fill-color': fillColorExpression as any
                 }
             });
 
@@ -172,7 +198,7 @@ export default function MalariaMap() {
             mapRef.current = null;
         }
 
-    }, [geojsonData]);
+    }, [geojsonData, species, isContainerReady, colorStops]);
 
 
     useEffect(() => {
@@ -216,7 +242,7 @@ export default function MalariaMap() {
                             </Select>
                         </div>
                     </div>
-                    <div ref={containerRef} style={{ height: '550px' }} className="rounded-lg overflow-hidden shadow" />
+                    <div ref={containerRef} style={{ height: '550px', width: '100%' }} className="rounded-lg overflow-hidden shadow" />
                 </div>
             </CardContent>
         </Card>

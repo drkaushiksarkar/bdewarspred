@@ -38,6 +38,12 @@ export type WeatherData = {
   is_extreme?: boolean;
 };
 
+export type DiseaseData = {
+  label: 'Malaria' | 'Dengue' | 'Diarrhoea';
+  value: string;
+  is_high?: boolean;
+};
+
 export type LiveWeatherData = {
   temp: number;
   humidity: number;

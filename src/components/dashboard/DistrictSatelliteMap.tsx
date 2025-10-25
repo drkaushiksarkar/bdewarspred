@@ -37,6 +37,7 @@ export default function DistrictSatelliteMap({
   const mapRef = useRef<Map | null>(null);
   const [basemap, setBasemap] = useState<'esri' | 'osm'>('esri');
   const [showLabels, setShowLabels] = useState<boolean>(showLabelsDefault);
+  const [isContainerReady, setIsContainerReady] = useState(false);
 
   const colorStops: [number, string][] = [
     [0, '#ffffcc'],
@@ -59,8 +60,24 @@ export default function DistrictSatelliteMap({
     return colorStops[0][1];
   };
 
+  // Wait for container to be ready
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
+    if (!containerRef.current) return;
+
+    const container = containerRef.current;
+
+    // Use setTimeout to ensure the container has been painted
+    const timer = setTimeout(() => {
+      if (container.offsetWidth > 0 && container.offsetHeight > 0) {
+        setIsContainerReady(true);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current || !isContainerReady) return;
 
     const map = new maplibregl.Map({
       container: containerRef.current,
@@ -197,7 +214,7 @@ export default function DistrictSatelliteMap({
 
     mapRef.current = map;
     return () => mapRef.current?.remove();
-  }, [predictionData, showLabelsDefault]);
+  }, [predictionData, showLabelsDefault, isContainerReady]);
 
   // Toggle basemap
   useEffect(() => {
@@ -218,7 +235,7 @@ export default function DistrictSatelliteMap({
   }, [showLabels]);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full" style={{ minHeight: height }}>
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-2">
          <div className="inline-flex rounded border p-1 bg-white shadow">
             <button
@@ -242,7 +259,7 @@ export default function DistrictSatelliteMap({
         </label>
       </div>
 
-      <div ref={containerRef} style={{ height }} className="rounded-lg overflow-hidden shadow" />
+      <div ref={containerRef} style={{ height, width: '100%' }} className="rounded-lg overflow-hidden shadow" />
 
       <div ref={legendContainerRef} className="absolute bottom-2 left-2 z-10">
           <MapLegend title="Total Predicted Cases" stops={colorStops} />

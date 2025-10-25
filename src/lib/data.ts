@@ -5,6 +5,7 @@ import type {
   TimeSeriesDataPoint,
   WeatherData,
   WeatherDiseaseTrigger,
+  DiseaseData,
 } from '@/lib/types';
 import { subDays, format } from 'date-fns';
 import { locations } from '@/lib/locations';
@@ -167,3 +168,39 @@ export const weatherData: WeatherData[] = [
   { label: 'Humidity', value: '75%' },
   { label: 'Rainfall', value: '0mm' },
 ];
+
+// Calculate total monthly cases for each disease
+export function getMonthlyCases(): DiseaseData[] {
+  // Get aggregated predictions
+  const dengueTotals = getAggregatedDenguePredictions();
+  const diarrhoeaTotals = getAggregatedDiarrhoeaPredictions();
+
+  // Calculate total predicted cases across all districts
+  const dengueCases = Math.round(Object.values(dengueTotals).reduce((sum, val) => sum + val, 0));
+  const diarrhoeaCases = Math.round(Object.values(diarrhoeaTotals).reduce((sum, val) => sum + val, 0));
+
+  // For malaria, we'll use a calculated estimate based on risk data
+  // Since there's no specific malaria prediction data, we'll estimate based on high-risk areas
+  const malariaEstimate = Math.round(malariaRiskData.reduce((sum, area) => {
+    // Estimate cases based on risk score (higher risk = more cases)
+    return sum + (area.risk_score * 10); // Scale factor for estimation
+  }, 0));
+
+  return [
+    {
+      label: 'Malaria',
+      value: `${malariaEstimate.toLocaleString()}`,
+      is_high: malariaEstimate > 4000
+    },
+    {
+      label: 'Dengue',
+      value: `${dengueCases.toLocaleString()}`,
+      is_high: dengueCases > 10000
+    },
+    {
+      label: 'Diarrhoea',
+      value: `${diarrhoeaCases.toLocaleString()}`,
+      is_high: diarrhoeaCases > 8000
+    },
+  ];
+}

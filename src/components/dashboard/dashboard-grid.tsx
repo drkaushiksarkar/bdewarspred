@@ -1,8 +1,8 @@
 "use client";
 
 import { useSearchParams } from 'next/navigation';
-import WeatherPanels from './weather-panels';
-import PredictedCasesTrendChart from './PredictedCasesTrendChart';
+import MetricsPanels from './metrics-panels';
+import CombinedPredictionChart from './CombinedPredictionChart';
 import {
   getRealTimeSeriesData,
   dengueRiskData,
@@ -12,17 +12,17 @@ import {
   locations,
   getAggregatedDenguePredictions,
   weatherDiseaseTriggers,
+  getMonthlyCases,
 } from '@/lib/data';
 import FeatureImportanceChart from './feature-importance-chart';
 import DistrictSatelliteMap from './DistrictSatelliteMap';
 import RiskHeatmap from './risk-heatmap';
 import { getLiveWeatherData } from '@/lib/weather';
-import type { WeatherData, RiskData } from '@/lib/types';
+import type { WeatherData, DiseaseData, RiskData } from '@/lib/types';
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import MalariaMap from './malaria-map';
 import DiarrhoeaMap from './DiarrhoeaMap';
-import PredictionUncertaintyChart from './PredictionUncertaintyChart';
 import WeatherDiseaseTriggers from './WeatherDiseaseTriggers';
 
 
@@ -64,6 +64,7 @@ export default function DashboardGrid() {
   const disease = searchParams.get('disease') || 'dengue';
 
   const [weatherData, setWeatherData] = React.useState<WeatherData[]>([]);
+  const [diseaseData, setDiseaseData] = React.useState<DiseaseData[]>([]);
   const [weatherError, setWeatherError] = React.useState(false);
 
   React.useEffect(() => {
@@ -73,6 +74,10 @@ export default function DashboardGrid() {
       setWeatherError(error);
     }
     loadWeather();
+
+    // Load disease data
+    const monthlyCases = getMonthlyCases();
+    setDiseaseData(monthlyCases);
   }, []);
 
   const timeSeriesData = React.useMemo(() => {
@@ -97,46 +102,54 @@ export default function DashboardGrid() {
   const denguePredictionData = React.useMemo(() => getAggregatedDenguePredictions(), []);
 
   return (
-    <div className="grid flex-1 items-start gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-5">
-      <div className="grid auto-rows-max items-start gap-4 sm:gap-6 lg:col-span-3 xl:col-span-3">
-        <WeatherPanels weatherData={weatherData} error={weatherError} />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            <PredictedCasesTrendChart data={timeSeriesData} />
-            <PredictionUncertaintyChart data={timeSeriesData} />
-            <FeatureImportanceChart data={featureImportanceData} />
-            <WeatherDiseaseTriggers data={weatherDiseaseTriggers} />
+    <div className="grid flex-1 items-start gap-4 sm:gap-6">
+      {/* Row 1: All 6 metric cards */}
+      <MetricsPanels weatherData={weatherData} diseaseData={diseaseData} weatherError={weatherError} />
+
+      {/* Row 2: Combined Prediction Chart (50%) and Risk Heatmap (50%) */}
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+        <CombinedPredictionChart data={timeSeriesData} />
+        <RiskHeatmap data={riskDataForDisease} />
+      </div>
+
+      {/* Row 3: Feature Importance (30%) and Weather Disease Triggers (70%) */}
+      <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-10">
+        <div className="lg:col-span-3">
+          <FeatureImportanceChart data={featureImportanceData} />
         </div>
-         <div className="grid gap-4 sm:grid-cols-1">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline">Dengue Predicted Cases Heatmap</CardTitle>
-                    <CardDescription>Total predicted dengue cases by district.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <DistrictSatelliteMap 
-                        height="550px" 
-                        showLabelsDefault={true}
-                        predictionData={denguePredictionData}
-                    />
-                </CardContent>
-            </Card>
-            <MalariaMap />
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline">Diarrhoea Predicted Cases Heatmap</CardTitle>
-                    <CardDescription>Total predicted Acute Watery Diarrhoea cases by district.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <DiarrhoeaMap 
-                        height="550px" 
-                        showLabelsDefault={true}
-                    />
-                </CardContent>
-            </Card>
+        <div className="lg:col-span-7">
+          <WeatherDiseaseTriggers data={weatherDiseaseTriggers} />
         </div>
       </div>
-      <div className="grid auto-rows-max items-start gap-4 sm:gap-6 lg:col-span-3 xl:col-span-2">
-        <RiskHeatmap data={riskDataForDisease} />
+
+      {/* Row 4+: Disease Heatmaps */}
+      <div className="grid gap-4 sm:grid-cols-1">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">Dengue Predicted Cases Heatmap</CardTitle>
+            <CardDescription>Total predicted dengue cases by district.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DistrictSatelliteMap
+              height="550px"
+              showLabelsDefault={true}
+              predictionData={denguePredictionData}
+            />
+          </CardContent>
+        </Card>
+        <MalariaMap />
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">Diarrhoea Predicted Cases Heatmap</CardTitle>
+            <CardDescription>Total predicted Acute Watery Diarrhoea cases by district.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DiarrhoeaMap
+              height="550px"
+              showLabelsDefault={true}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

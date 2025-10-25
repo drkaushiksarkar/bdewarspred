@@ -21,13 +21,13 @@ export default function FeatureImportanceChart({ data }: FeatureImportanceChartP
   const sortedData = [...data].sort((a, b) => b.importance - a.importance);
 
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <CardTitle className="font-headline">Feature Importance</CardTitle>
         <CardDescription>Key drivers of model predictions</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+      <CardContent className="flex-1 flex items-center">
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={sortedData} layout="vertical">
             <XAxis type="number" hide />
             <YAxis
