@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import MetricsPanels from './metrics-panels';
 import CombinedPredictionChart from './CombinedPredictionChart';
+import FilterBar from './filter-bar';
 import {
   getRealTimeSeriesData,
   dengueRiskData,
@@ -103,6 +104,9 @@ export default function DashboardGrid() {
 
   return (
     <div className="grid flex-1 items-start gap-4 sm:gap-6">
+      {/* Filter Bar */}
+      <FilterBar />
+
       {/* Row 1: All 6 metric cards */}
       <MetricsPanels weatherData={weatherData} diseaseData={diseaseData} weatherError={weatherError} />
 

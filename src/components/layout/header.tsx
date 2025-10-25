@@ -26,17 +26,26 @@ import {
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { HelpCircle, LogOut, PanelLeft, Search, Settings, Loader2 } from 'lucide-react';
+import { Biohazard, LogOut, Search, Settings, Loader2, Download } from 'lucide-react';
 import Link from 'next/link';
-import AppSidebar from './app-sidebar';
 import HelpDrawer from './help-drawer';
 import { searchAction } from '@/app/actions';
-import PartnerLogos from './partner-logos';
 import { useSession, signOut } from 'next-auth/react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export default function Header() {
   const { data: session } = useSession();
   const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
+
+  const handleDownloadReport = () => {
+    // Download functionality - can be implemented later
+    console.log('Download report');
+  };
   const [searchQuery, setSearchQuery] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
   const [searchResult, setSearchResult] = React.useState<string | null>(null);
@@ -68,22 +77,18 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 sm:py-4">
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button size="icon" variant="outline" className="sm:hidden">
-            <PanelLeft className="h-5 w-5" />
-            <span className="sr-only">Toggle Menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="sm:max-w-xs">
-          <AppSidebar />
-        </SheetContent>
-      </Sheet>
-      <div className="hidden md:flex">
-        <PartnerLogos />
-      </div>
-      <div className="relative ml-auto flex-1 md:grow-0">
+    <header className="sticky top-0 z-30 border-b bg-background">
+      <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
+        {/* Logo and Brand */}
+        <div className="flex items-center gap-2">
+          <Biohazard className="h-8 w-8 text-primary" />
+          <span className="font-headline text-xl font-semibold">
+            EWARS Bangladesh
+          </span>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative ml-auto flex-1 md:grow-0">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
@@ -95,6 +100,26 @@ export default function Header() {
           disabled={isSearching}
         />
       </div>
+
+      {/* Download Report Button */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={handleDownloadReport}
+            >
+              <Download className="h-5 w-5" />
+              <span className="sr-only">Download Report</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Download Report</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <HelpDrawer />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -140,6 +165,7 @@ export default function Header() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[525px]">

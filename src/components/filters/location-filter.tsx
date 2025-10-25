@@ -54,13 +54,13 @@ export function LocationFilter() {
   return (
     <div className="space-y-2">
       <Label>Location</Label>
-      <div className="space-y-2">
+      <div className="flex gap-2">
         <Select
           value={selectedDivision}
           onValueChange={(value) => handleFilterChange('division', value)}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Select Division" />
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Division" />
           </SelectTrigger>
           <SelectContent>
             {divisions.map((division: Location) => (
@@ -75,8 +75,8 @@ export function LocationFilter() {
             value={selectedDistrict ?? ''}
             onValueChange={(value) => handleFilterChange('district', value)}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Select District" />
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="District" />
             </SelectTrigger>
             <SelectContent>
               {districts.map((district: Location) => (
@@ -92,8 +92,8 @@ export function LocationFilter() {
             value={selectedUpazila ?? ''}
             onValueChange={(value) => handleFilterChange('upazila', value)}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Select Upazila" />
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Upazila" />
             </SelectTrigger>
             <SelectContent>
               {upazilas.map((upazila: Location) => (

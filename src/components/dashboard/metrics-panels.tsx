@@ -15,6 +15,42 @@ const diseaseIconMap = {
   Diarrhoea: Droplet,
 };
 
+const weatherColors = {
+  Temperature: {
+    bg: 'bg-orange-50',
+    icon: 'text-orange-600',
+    border: 'border-orange-200',
+  },
+  Humidity: {
+    bg: 'bg-blue-50',
+    icon: 'text-blue-600',
+    border: 'border-blue-200',
+  },
+  Rainfall: {
+    bg: 'bg-cyan-50',
+    icon: 'text-cyan-600',
+    border: 'border-cyan-200',
+  },
+};
+
+const diseaseColors = {
+  Malaria: {
+    bg: 'bg-purple-50',
+    icon: 'text-purple-600',
+    border: 'border-purple-200',
+  },
+  Dengue: {
+    bg: 'bg-red-50',
+    icon: 'text-red-600',
+    border: 'border-red-200',
+  },
+  Diarrhoea: {
+    bg: 'bg-amber-50',
+    icon: 'text-amber-600',
+    border: 'border-amber-200',
+  },
+};
+
 interface MetricsPanelsProps {
   weatherData: WeatherData[];
   diseaseData: DiseaseData[];
@@ -38,13 +74,14 @@ export default function MetricsPanels({ weatherData, diseaseData, weatherError }
     <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
       {weatherData.map((item) => {
         const Icon = weatherIconMap[item.label];
+        const colors = weatherColors[item.label];
         return (
-          <Card key={item.label} className="flex flex-col">
+          <Card key={item.label} className={cn('flex flex-col border-2', colors.bg, colors.border)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {item.label}
               </CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
+              <Icon className={cn('h-5 w-5', colors.icon)} />
             </CardHeader>
             <CardContent>
               <div
@@ -58,13 +95,14 @@ export default function MetricsPanels({ weatherData, diseaseData, weatherError }
       })}
       {diseaseData.map((item) => {
         const Icon = diseaseIconMap[item.label];
+        const colors = diseaseColors[item.label];
         return (
-          <Card key={item.label} className="flex flex-col">
+          <Card key={item.label} className={cn('flex flex-col border-2', colors.bg, colors.border)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {item.label}
               </CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
+              <Icon className={cn('h-5 w-5', colors.icon)} />
             </CardHeader>
             <CardContent>
               <div
