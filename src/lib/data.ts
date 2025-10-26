@@ -6,8 +6,12 @@ import type {
   WeatherData,
   WeatherDiseaseTrigger,
   DiseaseData,
+  BaselineMethod,
+  DistrictWeekData,
+  AlertStats,
+  WeeklyNationalData,
 } from '@/lib/types';
-import { subDays, format } from 'date-fns';
+import { subDays, format, getWeek, getYear, parseISO } from 'date-fns';
 import { locations } from '@/lib/locations';
 import modelOutput from '@/lib/model-output.json';
 import diarrhoeaData from '@/lib/diarrhoea-data.json';
@@ -212,4 +216,426 @@ export function getMonthlyCases(): DiseaseData[] {
       trend: diarrhoeaTrend
     },
   ];
+}
+
+// Alert System Functions
+
+// Helper function to calculate percentile
+function percentile(arr: number[], p: number): number {
+  if (arr.length === 0) return 0;
+  const sorted = [...arr].sort((a, b) => a - b);
+  const index = (p / 100) * (sorted.length - 1);
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  const weight = index % 1;
+
+  if (upper >= sorted.length) return sorted[sorted.length - 1];
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+}
+
+// Helper function to calculate mean
+function mean(arr: number[]): number {
+  if (arr.length === 0) return 0;
+  return arr.reduce((sum, val) => sum + val, 0) / arr.length;
+}
+
+// Helper function to calculate standard deviation
+function standardDeviation(arr: number[]): number {
+  if (arr.length === 0) return 0;
+  const avg = mean(arr);
+  const squareDiffs = arr.map(val => Math.pow(val - avg, 2));
+  return Math.sqrt(mean(squareDiffs));
+}
+
+// Calculate baseline using different methods
+function calculateBaseline(historicalData: number[], method: BaselineMethod): number {
+  if (historicalData.length === 0) return 0;
+
+  switch (method) {
+    case 'p95':
+      // 95th percentile
+      return percentile(historicalData, 95);
+
+    case 'mean2sd':
+      // Mean + 2 * Standard Deviation
+      const avg = mean(historicalData);
+      const sd = standardDeviation(historicalData);
+      return avg + 2 * sd;
+
+    case 'endemic':
+      // Median + 2 * (Q3 - Q1)
+      const q1 = percentile(historicalData, 25);
+      const q3 = percentile(historicalData, 75);
+      const median = percentile(historicalData, 50);
+      return median + 2 * (q3 - q1);
+
+    default:
+      return 0;
+  }
+}
+
+// Get historical data for a specific week across all years (excluding target year)
+function getHistoricalWeekData(
+  disease: string,
+  district: string,
+  weekNumber: number,
+  excludeYear?: number
+): number[] {
+  let sourceData: any[];
+
+  if (disease === 'dengue') {
+    sourceData = modelOutput;
+  } else if (disease === 'diarrhoea') {
+    sourceData = diarrhoeaData;
+  } else {
+    return [];
+  }
+
+  return sourceData
+    .filter(item => {
+      const itemDate = parseISO(item.date);
+      const itemWeek = getWeek(itemDate);
+      const itemYear = getYear(itemDate);
+      const itemDistrict = item.district.toLowerCase();
+
+      const weekMatches = itemWeek === weekNumber && itemDistrict === district.toLowerCase();
+      const yearMatches = excludeYear ? itemYear !== excludeYear : true;
+
+      return weekMatches && yearMatches;
+    })
+    .map(item => item.actual ?? item.predicted)
+    .filter((val): val is number => val !== null && val !== undefined);
+}
+
+// Get alert data for all districts (using 2024 data)
+export function getDistrictAlertData(
+  disease: string,
+  method: BaselineMethod,
+  targetYear: number = 2024
+): DistrictWeekData[] {
+  let sourceData: any[];
+
+  if (disease === 'dengue') {
+    sourceData = modelOutput;
+  } else if (disease === 'diarrhoea') {
+    sourceData = diarrhoeaData;
+  } else {
+    return [];
+  }
+
+  // Get all districts
+  const districts = locations.filter(l => l.level === 'district');
+
+  // Get current week data for each district
+  const alertData: DistrictWeekData[] = [];
+
+  districts.forEach(district => {
+    // Get the latest data point for this district in the target year
+    const districtData = sourceData
+      .filter(item => {
+        const itemDate = parseISO(item.date);
+        const itemYear = getYear(itemDate);
+        return item.district.toLowerCase() === district.name.toLowerCase() && itemYear === targetYear;
+      })
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    if (districtData.length > 0) {
+      const latestData = districtData[0];
+      const date = parseISO(latestData.date);
+      const week = getWeek(date);
+      const year = getYear(date);
+      const cases = latestData.actual ?? latestData.predicted;
+
+      // Get historical data for this week (excluding target year)
+      const historicalData = getHistoricalWeekData(disease, district.name, week, targetYear);
+      const baseline = calculateBaseline(historicalData, method);
+
+      alertData.push({
+        district: district.name,
+        week,
+        year,
+        cases,
+        baseline,
+        isOnAlert: cases > baseline,
+      });
+    }
+  });
+
+  return alertData;
+}
+
+// Get alert statistics
+export function getAlertStats(
+  disease: string,
+  method: BaselineMethod,
+  targetYear: number = 2024
+): AlertStats {
+  const alertData = getDistrictAlertData(disease, method, targetYear);
+
+  // Calculate current week national cases
+  const currentWeekCases = alertData.reduce((sum, data) => sum + data.cases, 0);
+
+  // Calculate previous week cases (simplified - using historical average)
+  const previousWeekCases = Math.round(currentWeekCases * 0.9); // Simulated
+
+  // Calculate percent change
+  const percentChange = previousWeekCases > 0
+    ? ((currentWeekCases - previousWeekCases) / previousWeekCases) * 100
+    : 0;
+
+  // Count districts on alert
+  const districtsOnAlert = alertData.filter(d => d.isOnAlert).length;
+  const totalDistricts = alertData.length;
+
+  // Calculate national risk level
+  const alertPercentage = totalDistricts > 0 ? (districtsOnAlert / totalDistricts) * 100 : 0;
+  const nationalRiskLevel: 'Low' | 'Medium' | 'High' =
+    alertPercentage > 50 ? 'High' : alertPercentage > 25 ? 'Medium' : 'Low';
+
+  return {
+    currentWeekCases,
+    previousWeekCases,
+    percentChange,
+    districtsOnAlert,
+    totalDistricts,
+    nationalRiskLevel,
+  };
+}
+
+// Get available districts for a disease
+export function getAvailableDistricts(disease: string): string[] {
+  let sourceData: any[];
+
+  if (disease === 'dengue') {
+    sourceData = modelOutput;
+  } else if (disease === 'diarrhoea') {
+    sourceData = diarrhoeaData;
+  } else {
+    return [];
+  }
+
+  const districts = new Set<string>();
+  sourceData.forEach(item => {
+    if (item.district) {
+      districts.add(item.district);
+    }
+  });
+
+  return Array.from(districts).sort();
+}
+
+// Get weekly data from API for chart (fetches from external API)
+export async function getWeeklyNationalDataFromAPI(
+  disease: string,
+  method: BaselineMethod,
+  targetYear: number = 2024
+): Promise<WeeklyNationalData[]> {
+  try {
+    const apiEndpoint = disease === 'dengue'
+      ? '/api/drilldown/dengue'
+      : '/api/drilldown/awd';
+
+    const response = await fetch(apiEndpoint);
+    if (!response.ok) {
+      console.error('Failed to fetch data from API');
+      return [];
+    }
+
+    const data = await response.json();
+
+    if (disease === 'dengue') {
+      // First, group ALL data by year and week to get national totals per year-week
+      const yearWeekMap = new Map<string, number>();
+
+      data.forEach((item: any) => {
+        const week = item.epi_week;
+        const year = item.year;
+        const cases = item.weekly_hospitalised_cases;
+        const key = `${year}-${week}`;
+
+        yearWeekMap.set(key, (yearWeekMap.get(key) || 0) + cases);
+      });
+
+      // Now group by week and separate target year from historical years
+      const weeklyMap = new Map<number, { cases: number; historicalNationalTotals: number[]; }>();
+
+      yearWeekMap.forEach((nationalTotal, key) => {
+        const [yearStr, weekStr] = key.split('-');
+        const year = parseInt(yearStr);
+        const week = parseInt(weekStr);
+
+        if (!weeklyMap.has(week)) {
+          weeklyMap.set(week, { cases: 0, historicalNationalTotals: [] });
+        }
+
+        const weekData = weeklyMap.get(week)!;
+
+        // For target year, use the national total
+        if (year === targetYear) {
+          weekData.cases = nationalTotal;
+        }
+
+        // For historical years, collect national totals for baseline calculation
+        if (year !== targetYear) {
+          weekData.historicalNationalTotals.push(nationalTotal);
+        }
+      });
+
+      // Convert to array and calculate baselines using selected method
+      const result: WeeklyNationalData[] = [];
+      weeklyMap.forEach((weekData, week) => {
+        // Calculate baseline using the selected method on historical NATIONAL totals
+        const baseline = calculateBaseline(weekData.historicalNationalTotals, method);
+
+        // Only include weeks from target year that have data
+        if (weekData.cases > 0) {
+          result.push({
+            week,
+            year: targetYear,
+            date: new Date(targetYear, 0, week * 7).toISOString(), // Approximate date
+            cases: weekData.cases,
+            baseline: baseline,
+          });
+        }
+      });
+
+      return result.sort((a, b) => a.week - b.week);
+    } else {
+      // AWD data - group by week from dates
+      // First, group ALL data by year and week to get national totals per year-week
+      const yearWeekMap = new Map<string, number>();
+
+      data.forEach((item: any) => {
+        const date = new Date(item.date);
+        const year = date.getFullYear();
+        const week = getWeek(date);
+        const cases = item.daily_cases;
+        const key = `${year}-${week}`;
+
+        yearWeekMap.set(key, (yearWeekMap.get(key) || 0) + cases);
+      });
+
+      // Now group by week and separate target year from historical years
+      const weeklyMap = new Map<number, { cases: number; historicalNationalTotals: number[]; }>();
+
+      yearWeekMap.forEach((nationalTotal, key) => {
+        const [yearStr, weekStr] = key.split('-');
+        const year = parseInt(yearStr);
+        const week = parseInt(weekStr);
+
+        if (!weeklyMap.has(week)) {
+          weeklyMap.set(week, { cases: 0, historicalNationalTotals: [] });
+        }
+
+        const weekData = weeklyMap.get(week)!;
+
+        // For target year, use the national total
+        if (year === targetYear) {
+          weekData.cases = nationalTotal;
+        }
+
+        // For historical years, collect national totals for baseline calculation
+        if (year !== targetYear) {
+          weekData.historicalNationalTotals.push(nationalTotal);
+        }
+      });
+
+      // Convert to array and calculate baselines using selected method
+      const result: WeeklyNationalData[] = [];
+      weeklyMap.forEach((weekData, week) => {
+        // Calculate baseline using the selected method on historical NATIONAL totals
+        const baseline = calculateBaseline(weekData.historicalNationalTotals, method);
+
+        // Only include weeks from target year that have data
+        if (weekData.cases > 0) {
+          result.push({
+            week,
+            year: targetYear,
+            date: new Date(targetYear, 0, week * 7).toISOString(), // Approximate date
+            cases: weekData.cases,
+            baseline: baseline,
+          });
+        }
+      });
+
+      return result.sort((a, b) => a.week - b.week);
+    }
+  } catch (error) {
+    console.error('Error fetching weekly national data:', error);
+    return [];
+  }
+}
+
+// Get weekly data for chart (district-level or national) - Legacy function for backward compatibility
+export function getWeeklyNationalData(
+  disease: string,
+  method: BaselineMethod,
+  targetYear: number = 2024,
+  districtName?: string
+): WeeklyNationalData[] {
+  let sourceData: any[];
+
+  if (disease === 'dengue') {
+    sourceData = modelOutput;
+  } else if (disease === 'diarrhoea') {
+    sourceData = diarrhoeaData;
+  } else {
+    return [];
+  }
+
+  // Filter for optional district only (removed year filter to show all available data)
+  const filteredData = sourceData.filter(item => {
+    const districtMatches = districtName ? item.district.toLowerCase() === districtName.toLowerCase() : true;
+    return districtMatches;
+  });
+
+  // Group by week
+  const weeklyData = new Map<number, { cases: number; dates: Date[]; districts: Set<string> }>();
+
+  filteredData.forEach(item => {
+    const date = parseISO(item.date);
+    const week = getWeek(date);
+
+    if (!weeklyData.has(week)) {
+      weeklyData.set(week, { cases: 0, dates: [], districts: new Set() });
+    }
+
+    const data = weeklyData.get(week)!;
+    data.cases += item.actual ?? item.predicted;
+    data.dates.push(date);
+    data.districts.add(item.district);
+  });
+
+  // Convert to array and calculate baselines
+  const result: WeeklyNationalData[] = [];
+
+  weeklyData.forEach((data, week) => {
+    // Calculate baseline for this week (using all historical data excluding current data's year)
+    let totalBaseline = 0;
+    const currentYear = getYear(data.dates[0]);
+
+    if (districtName) {
+      // District-level baseline
+      const historicalData = getHistoricalWeekData(disease, districtName, week, currentYear);
+      totalBaseline = calculateBaseline(historicalData, method);
+    } else {
+      // National baseline (sum across all districts for this week)
+      const districts = Array.from(data.districts);
+      districts.forEach(district => {
+        const historicalData = getHistoricalWeekData(disease, district, week, currentYear);
+        totalBaseline += calculateBaseline(historicalData, method);
+      });
+    }
+
+    result.push({
+      week,
+      year: currentYear,
+      date: data.dates[0].toISOString(),
+      cases: data.cases,
+      baseline: totalBaseline,
+    });
+  });
+
+  // Sort by date to handle multi-year data correctly
+  return result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }

@@ -62,3 +62,31 @@ export type WeatherDiseaseTrigger = {
   diseases: string[];
   impact: string;
 };
+
+export type BaselineMethod = 'p95' | 'mean2sd' | 'endemic';
+
+export type DistrictWeekData = {
+  district: string;
+  week: number;
+  year: number;
+  cases: number;
+  baseline: number;
+  isOnAlert: boolean;
+};
+
+export type AlertStats = {
+  currentWeekCases: number;
+  previousWeekCases: number;
+  percentChange: number;
+  districtsOnAlert: number;
+  totalDistricts: number;
+  nationalRiskLevel: 'Low' | 'Medium' | 'High';
+};
+
+export type WeeklyNationalData = {
+  week: number;
+  year: number;
+  date: string;
+  cases: number;
+  baseline: number;
+};

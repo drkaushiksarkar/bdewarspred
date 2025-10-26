@@ -1,8 +1,8 @@
 import DistrictSatelliteMap from '@/components/dashboard/DistrictSatelliteMap';
-import { getAggregatedPredictions } from '@/lib/data';
+import { getAggregatedDenguePredictions } from '@/lib/data';
 
 export default function DistrictsMapPage() {
-  const predictionData = getAggregatedPredictions();
+  const predictionData = getAggregatedDenguePredictions();
 
   return (
     <main className="p-4">

@@ -5,13 +5,14 @@ import Header from '@/components/layout/header';
 import NavigationTabs from '@/components/layout/navigation-tabs';
 import OverviewTab from '@/components/dashboard/tabs/overview-tab';
 import ModelTab from '@/components/dashboard/tabs/model-tab';
+import AlertTab from '@/components/dashboard/tabs/alert-tab';
 import DiseaseMapsTab from '@/components/dashboard/tabs/disease-maps-tab';
 import SimulationTab from '@/components/dashboard/tabs/simulation-tab';
 import DrilldownTab from '@/components/dashboard/tabs/drilldown-tab';
 import DataEntryTab from '@/components/dashboard/tabs/data-entry-tab';
 import PartnerLogos from '@/components/layout/partner-logos';
 
-type Tab = 'overview' | 'model' | 'disease-maps' | 'simulation' | 'drilldown' | 'data-entry';
+type Tab = 'overview' | 'model' | 'alert' | 'disease-maps' | 'simulation' | 'drilldown' | 'data-entry';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -22,6 +23,8 @@ export default function Home() {
         return <OverviewTab />;
       case 'model':
         return <ModelTab />;
+      case 'alert':
+        return <AlertTab />;
       case 'disease-maps':
         return <DiseaseMapsTab />;
       case 'simulation':
