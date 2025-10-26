@@ -93,7 +93,7 @@ export default function Header() {
         <Input
           type="search"
           placeholder="Ask a question about the data..."
-          className="w-full rounded-lg bg-secondary pl-8 md:w-[200px] lg:w-[320px]"
+          className="w-full rounded-lg bg-secondary pl-8 md:w-[200px] lg:w-[320px] placeholder:text-gray-400"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={handleKeyDown}

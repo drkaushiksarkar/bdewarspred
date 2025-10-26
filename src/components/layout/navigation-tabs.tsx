@@ -1,9 +1,9 @@
 "use client";
 
-import { LayoutDashboard, Layers, Map, Activity, Upload } from 'lucide-react';
+import { LayoutDashboard, Layers, Map, Activity, Upload, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type Tab = 'overview' | 'model' | 'disease-maps' | 'simulation' | 'data-entry';
+type Tab = 'overview' | 'model' | 'disease-maps' | 'simulation' | 'drilldown' | 'data-entry';
 
 interface NavigationTabsProps {
   activeTab: Tab;
@@ -15,6 +15,7 @@ const tabs = [
   { id: 'model' as Tab, label: 'Model', icon: Activity },
   { id: 'disease-maps' as Tab, label: 'Disease Maps', icon: Map },
   { id: 'simulation' as Tab, label: 'Simulation', icon: Layers },
+  { id: 'drilldown' as Tab, label: 'Drilldown', icon: BarChart3 },
   { id: 'data-entry' as Tab, label: 'Data Entry', icon: Upload },
 ];
 
