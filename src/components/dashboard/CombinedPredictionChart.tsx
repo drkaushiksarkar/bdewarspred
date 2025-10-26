@@ -47,7 +47,7 @@ export default function CombinedPredictionChart({ data }: CombinedPredictionChar
   });
 
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader>
         <CardTitle className="font-headline">Predicted Cases & Uncertainty</CardTitle>
         <CardDescription>Predicted case trend with uncertainty interval overlay</CardDescription>

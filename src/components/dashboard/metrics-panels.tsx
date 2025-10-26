@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Thermometer, Droplets, CloudRain, AlertTriangle, Activity, Bug, Droplet } from 'lucide-react';
+import { Thermometer, Droplets, CloudRain, AlertTriangle, Activity, Bug, Droplet, TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { WeatherData, DiseaseData } from '@/lib/types';
 
@@ -19,17 +19,14 @@ const weatherColors = {
   Temperature: {
     bg: 'bg-orange-50',
     icon: 'text-orange-600',
-    border: 'border-orange-200',
   },
   Humidity: {
     bg: 'bg-blue-50',
     icon: 'text-blue-600',
-    border: 'border-blue-200',
   },
   Rainfall: {
     bg: 'bg-cyan-50',
     icon: 'text-cyan-600',
-    border: 'border-cyan-200',
   },
 };
 
@@ -37,17 +34,14 @@ const diseaseColors = {
   Malaria: {
     bg: 'bg-purple-50',
     icon: 'text-purple-600',
-    border: 'border-purple-200',
   },
   Dengue: {
     bg: 'bg-red-50',
     icon: 'text-red-600',
-    border: 'border-red-200',
   },
   Diarrhoea: {
     bg: 'bg-amber-50',
     icon: 'text-amber-600',
-    border: 'border-amber-200',
   },
 };
 
@@ -76,7 +70,7 @@ export default function MetricsPanels({ weatherData, diseaseData, weatherError }
         const Icon = weatherIconMap[item.label];
         const colors = weatherColors[item.label];
         return (
-          <Card key={item.label} className={cn('flex flex-col border-2', colors.bg, colors.border)}>
+          <Card key={item.label} className={cn('flex flex-col border-0 shadow-md', colors.bg)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {item.label}
@@ -85,10 +79,15 @@ export default function MetricsPanels({ weatherData, diseaseData, weatherError }
             </CardHeader>
             <CardContent>
               <div
-                className={cn('text-2xl font-bold', item.is_extreme && 'text-destructive')}
+                className={cn('text-2xl font-bold text-black', item.is_extreme && 'text-red-600')}
               >
                 {item.value}
               </div>
+              {item.subtitle && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {item.subtitle}
+                </p>
+              )}
             </CardContent>
           </Card>
         );
@@ -96,8 +95,11 @@ export default function MetricsPanels({ weatherData, diseaseData, weatherError }
       {diseaseData.map((item) => {
         const Icon = diseaseIconMap[item.label];
         const colors = diseaseColors[item.label];
+        const hasIncreased = item.trend && item.trend > 0;
+        const hasDecreased = item.trend && item.trend < 0;
+
         return (
-          <Card key={item.label} className={cn('flex flex-col border-2', colors.bg, colors.border)}>
+          <Card key={item.label} className={cn('flex flex-col border-0 shadow-md', colors.bg)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {item.label}
@@ -105,10 +107,24 @@ export default function MetricsPanels({ weatherData, diseaseData, weatherError }
               <Icon className={cn('h-5 w-5', colors.icon)} />
             </CardHeader>
             <CardContent>
-              <div
-                className={cn('text-2xl font-bold', item.is_high && 'text-orange-600')}
-              >
-                {item.value}
+              <div className="flex items-baseline gap-2">
+                <div
+                  className={cn('text-2xl font-bold text-black', item.is_high && 'text-red-600')}
+                >
+                  {item.value}
+                </div>
+                {item.trend !== undefined && (
+                  <div className={cn('flex items-center gap-1 text-sm font-medium',
+                    hasIncreased ? 'text-red-600' : hasDecreased ? 'text-green-600' : 'text-gray-600'
+                  )}>
+                    {hasIncreased ? (
+                      <TrendingUp className="h-4 w-4" />
+                    ) : hasDecreased ? (
+                      <TrendingDown className="h-4 w-4" />
+                    ) : null}
+                    <span>{Math.abs(item.trend)}%</span>
+                  </div>
+                )}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Monthly Cases

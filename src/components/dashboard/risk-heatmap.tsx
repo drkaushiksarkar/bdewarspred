@@ -57,7 +57,7 @@ export default function RiskHeatmap({ data }: { data: RiskData[] }) {
   };
 
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader>
         <CardTitle className="font-headline">Non-Spatial Risk Heatmap</CardTitle>
         <CardDescription>Risk scores and trends by location</CardDescription>

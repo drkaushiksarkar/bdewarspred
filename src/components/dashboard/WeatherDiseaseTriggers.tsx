@@ -25,7 +25,7 @@ interface WeatherDiseaseTriggersProps {
 
 export default function WeatherDiseaseTriggers({ data }: WeatherDiseaseTriggersProps) {
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col shadow-md">
       <CardHeader>
         <CardTitle className="font-headline">Weather Impact on Disease Outbreaks</CardTitle>
         <CardDescription>How different weather variables can influence disease transmission.</CardDescription>

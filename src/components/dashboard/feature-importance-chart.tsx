@@ -21,7 +21,7 @@ export default function FeatureImportanceChart({ data }: FeatureImportanceChartP
   const sortedData = [...data].sort((a, b) => b.importance - a.importance);
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col shadow-md">
       <CardHeader>
         <CardTitle className="font-headline">Feature Importance</CardTitle>
         <CardDescription>Key drivers of model predictions</CardDescription>

@@ -77,12 +77,12 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-background">
-      <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
+    <header className="sticky top-0 z-30 bg-white">
+      <div className="mx-auto max-w-[1600px] flex h-16 items-center gap-4 px-12 sm:px-18 lg:px-36 xl:px-48 2xl:px-72">
         {/* Logo and Brand */}
-        <div className="flex items-center gap-2">
-          <Biohazard className="h-8 w-8 text-primary" />
-          <span className="font-headline text-xl font-semibold">
+        <div className="flex items-center gap-3">
+          <Biohazard className="h-8 w-8 text-black" />
+          <span className="font-headline text-xl font-bold text-black">
             EWARS Bangladesh
           </span>
         </div>
@@ -107,7 +107,7 @@ export default function Header() {
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="bg-black text-white hover:bg-gray-800"
               onClick={handleDownloadReport}
             >
               <Download className="h-5 w-5" />

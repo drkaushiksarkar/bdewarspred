@@ -217,7 +217,7 @@ export default function MalariaMap() {
     }, [species, geojsonData, colorStops]);
 
     return (
-        <Card>
+        <Card className="shadow-md">
             <CardHeader>
                 <CardTitle className="font-headline">Malaria Geospatial Risk Map</CardTitle>
                 <CardDescription>

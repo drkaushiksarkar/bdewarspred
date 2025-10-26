@@ -36,18 +36,23 @@ export type WeatherData = {
   label: 'Temperature' | 'Humidity' | 'Rainfall';
   value: string;
   is_extreme?: boolean;
+  subtitle?: string;
 };
 
 export type DiseaseData = {
   label: 'Malaria' | 'Dengue' | 'Diarrhoea';
   value: string;
   is_high?: boolean;
+  trend?: number;
 };
 
 export type LiveWeatherData = {
   temp: number;
+  temp_min: number;
+  temp_max: number;
   humidity: number;
   rainfall: number;
+  weather_description?: string;
 };
 
 export type WeatherDiseaseTrigger = {

@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 
 export default function FilterBar() {
   return (
-    <Card className="bg-gray-50 p-4 shadow-sm">
+    <Card className="bg-gray-50 p-4 shadow-md">
       <div className="flex flex-wrap gap-6 items-end">
         <div className="flex-1 min-w-[300px]">
           <LocationFilter />

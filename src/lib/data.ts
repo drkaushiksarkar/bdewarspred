@@ -186,21 +186,30 @@ export function getMonthlyCases(): DiseaseData[] {
     return sum + (area.risk_score * 10); // Scale factor for estimation
   }, 0));
 
+  // Calculate trends (simulated - in production, compare with previous month's data)
+  // Positive = increase, Negative = decrease
+  const malariaTrend = 12; // 12% increase from previous month
+  const dengueTrend = -8; // 8% decrease from previous month
+  const diarrhoeaTrend = 15; // 15% increase from previous month
+
   return [
     {
       label: 'Malaria',
       value: `${malariaEstimate.toLocaleString()}`,
-      is_high: malariaEstimate > 4000
+      is_high: malariaEstimate > 4000,
+      trend: malariaTrend
     },
     {
       label: 'Dengue',
       value: `${dengueCases.toLocaleString()}`,
-      is_high: dengueCases > 10000
+      is_high: dengueCases > 10000,
+      trend: dengueTrend
     },
     {
       label: 'Diarrhoea',
       value: `${diarrhoeaCases.toLocaleString()}`,
-      is_high: diarrhoeaCases > 8000
+      is_high: diarrhoeaCases > 8000,
+      trend: diarrhoeaTrend
     },
   ];
 }
