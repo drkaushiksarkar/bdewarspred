@@ -62,7 +62,7 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
         <CardDescription>Districts with highest case counts from previous week</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {data.map((district) => {
             const trendInfo = getTrendInfo(district.growth_rate_wow, district.growth_flag);
             const growthRateAbs = Math.abs(district.growth_rate_wow);
@@ -79,15 +79,15 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
                 <CardContent className="p-4">
                   {/* District Header */}
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className={cn('p-2 rounded-lg', trendInfo.bgColor)}>
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className={cn('p-2 rounded-lg flex-shrink-0', trendInfo.bgColor)}>
                         <MapPin className={cn('h-5 w-5', trendInfo.color)} />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-sm text-gray-900">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-sm text-gray-900 truncate">
                           {district.district}
                         </h3>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 truncate">
                           Week {district.epi_week}, {district.year}
                         </p>
                       </div>
@@ -103,7 +103,7 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
                   </div>
 
                   {/* Trend Indicator */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                  <div className="flex flex-col gap-2 pt-3 border-t border-gray-200">
                     <div className="flex items-center gap-1.5">
                       <div className={cn('flex items-center gap-1', trendInfo.color)}>
                         {trendInfo.icon}
@@ -122,7 +122,7 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
                           : 'secondary'
                       }
                       className={cn(
-                        'text-xs',
+                        'text-xs w-fit',
                         trendInfo.label === 'Declining' && 'bg-green-100 text-green-800 hover:bg-green-100'
                       )}
                     >
@@ -131,7 +131,7 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
                   </div>
 
                   {/* This Week Actual (if available) */}
-                  {district.this_week_actual > 0 && (
+                  {district.this_week_actual !== undefined && district.this_week_actual !== null && (
                     <div className="mt-2 pt-2 border-t border-gray-200">
                       <div className="text-xs text-gray-600">
                         This week:{' '}
