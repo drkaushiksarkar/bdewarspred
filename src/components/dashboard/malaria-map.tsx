@@ -46,40 +46,46 @@ export default function MalariaMap() {
     useEffect(() => {
         async function loadData() {
             try {
-                const [geojsonRes, malariaRes] = await Promise.all([
+                const [geojsonRes, csvRes] = await Promise.all([
                     fetch('/geo/malaria.geojson'),
-                    fetch('/api/data/malaria')
+                    fetch('/geo/malaria_predictions.csv')
                 ]);
 
-                if (!geojsonRes.ok || !malariaRes.ok) {
+                if (!geojsonRes.ok || !csvRes.ok) {
                     console.error("Failed to fetch map data");
                     return;
                 }
 
                 const geojson = await geojsonRes.json();
-                const malariaData = await malariaRes.json();
+                const csvText = await csvRes.text();
 
-                const predictionsByUpazila: { [key: string]: any } = {};
-                malariaData.forEach((row: any) => {
-                    if (row.UpazilaID) {
-                        predictionsByUpazila[row.UpazilaID] = {
-                            pv_rate: row.pv_rate,
-                            pf_rate: row.pf_rate,
-                            mixed_rate: row.mixed_rate
-                        };
+                Papa.parse(csvText, {
+                    header: true,
+                    dynamicTyping: true,
+                    complete: (results) => {
+                        const predictionsByUpazila: { [key: string]: any } = {};
+                        (results.data as any[]).forEach((row: any) => {
+                            if (row.UpazilaID) {
+                                predictionsByUpazila[row.UpazilaID] = {
+                                    pv_rate: row.pv_rate,
+                                    pf_rate: row.pf_rate,
+                                    mixed_rate: row.mixed_rate
+                                };
+                            }
+                        });
+
+                        geojson.features.forEach((feature: any) => {
+                            const upazilaId = feature.properties.UpazilaID;
+                            const predictions = predictionsByUpazila[upazilaId];
+                            if (predictions) {
+                                feature.properties.pv_rate = predictions.pv_rate ?? 0;
+                                feature.properties.pf_rate = predictions.pf_rate ?? 0;
+                                feature.properties.mixed_rate = predictions.mixed_rate ?? 0;
+                            }
+                        });
+                        setGeojsonData(geojson);
                     }
                 });
-
-                geojson.features.forEach((feature: any) => {
-                    const upazilaId = feature.properties.UpazilaID;
-                    const predictions = predictionsByUpazila[upazilaId];
-                    if (predictions) {
-                        feature.properties.pv_rate = predictions.pv_rate ?? 0;
-                        feature.properties.pf_rate = predictions.pf_rate ?? 0;
-                        feature.properties.mixed_rate = predictions.mixed_rate ?? 0;
-                    }
-                });
-                setGeojsonData(geojson);
             } catch (error) {
                 console.error("Error loading map data:", error);
             }

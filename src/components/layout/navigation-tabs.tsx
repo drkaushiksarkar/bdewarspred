@@ -12,11 +12,11 @@ interface NavigationTabsProps {
 
 const tabs = [
   { id: 'overview' as Tab, label: 'Overview', icon: LayoutDashboard },
-  { id: 'model' as Tab, label: 'Model', icon: Activity },
-  { id: 'alert' as Tab, label: 'Alert', icon: AlertTriangle },
   { id: 'disease-maps' as Tab, label: 'Disease Maps', icon: Map },
+  { id: 'alert' as Tab, label: 'Alert', icon: AlertTriangle },
+  { id: 'drilldown' as Tab, label: 'Climate Impact', icon: BarChart3 },
   { id: 'simulation' as Tab, label: 'Simulation', icon: Layers },
-  { id: 'drilldown' as Tab, label: 'Drilldown', icon: BarChart3 },
+  { id: 'model' as Tab, label: 'Model', icon: Activity },
   { id: 'data-entry' as Tab, label: 'Data Entry', icon: Upload },
 ];
 

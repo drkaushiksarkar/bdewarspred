@@ -15,9 +15,6 @@ import { Slider } from '@/components/ui/slider';
 import {
   LineChart,
   Line,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -27,7 +24,8 @@ import {
 } from 'recharts';
 import { Loader2, TrendingUp, Activity, Droplets, Thermometer, CloudRain } from 'lucide-react';
 import { fetchDengueData, fetchAWDData, fetchMalariaData, DengueData, AWDData, MalariaData } from '@/lib/drilldown-api';
-import { locations } from '@/lib/data';
+import { locations, weatherDiseaseTriggers } from '@/lib/data';
+import WeatherDiseaseTriggers from '../WeatherDiseaseTriggers';
 
 type WeatherVariable = 'temperature' | 'humidity' | 'rainfall' | 'all';
 
@@ -597,42 +595,6 @@ export default function DrilldownTab() {
     }
   }, [disease, filteredData]);
 
-  // Prepare district distribution for pie chart
-  const districtDistribution = useMemo(() => {
-    if (disease === 'dengue') {
-      const districtCounts: { [key: string]: number } = {};
-      dengueData.forEach(item => {
-        districtCounts[item.district] = (districtCounts[item.district] || 0) + item.weekly_hospitalised_cases;
-      });
-      return Object.entries(districtCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
-        .map(([name, value]) => ({ name, value }));
-    } else if (disease === 'awd') {
-      const districtCounts: { [key: string]: number } = {};
-      awdData.forEach(item => {
-        const district = item.district.charAt(0).toUpperCase() + item.district.slice(1);
-        districtCounts[district] = (districtCounts[district] || 0) + item.daily_cases;
-      });
-      return Object.entries(districtCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
-        .map(([name, value]) => ({ name, value }));
-    } else {
-      const districtCounts: { [key: string]: number } = {};
-      malariaData.forEach(item => {
-        const district = item.district.charAt(0).toUpperCase() + item.district.slice(1);
-        districtCounts[district] = (districtCounts[district] || 0) + item.weekly_cases;
-      });
-      return Object.entries(districtCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
-        .map(([name, value]) => ({ name, value }));
-    }
-  }, [disease, dengueData, awdData, malariaData]);
-
-  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4CAF50', '#E91E63'];
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-96 space-y-4">
@@ -786,183 +748,122 @@ export default function DrilldownTab() {
         </Card>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* District Distribution Pie Chart */}
-        <Card className="shadow-md">
-          <CardHeader>
-            <CardTitle className="font-headline">Cases by District</CardTitle>
-            <CardDescription>Top 10 districts by case count</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
-              <PieChart>
-                <Pie
-                  data={districtDistribution}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {districtDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Cases Trend Line Chart */}
-        <Card className="shadow-md">
-          <CardHeader>
-            <CardTitle className="font-headline">Cases Over Time</CardTitle>
-            <CardDescription>
-              {disease === 'dengue' ? 'Weekly cases trend' : disease === 'awd' ? 'Daily cases trend' : 'Weekly cases trend'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={timeSeriesData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  interval={'preserveStartEnd'}
-                  tick={{ fontSize: 9 }}
-                />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="cases"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  name="Cases"
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Weather Variables vs Cases */}
-      <Card className="shadow-md">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="font-headline">Disease Cases vs Weather Variables</CardTitle>
-              <CardDescription>Correlation between cases and environmental factors</CardDescription>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant={weatherVariable === 'temperature' ? 'default' : 'outline'}
-                className={weatherVariable === 'temperature' ? 'bg-orange-600 hover:bg-orange-700' : ''}
-                onClick={() => setWeatherVariable('temperature')}
-              >
-                <Thermometer className="h-4 w-4 mr-1" />
-                Temp
-              </Button>
-              <Button
-                size="sm"
-                variant={weatherVariable === 'humidity' ? 'default' : 'outline'}
-                className={weatherVariable === 'humidity' ? 'bg-blue-600 hover:bg-blue-700' : ''}
-                onClick={() => setWeatherVariable('humidity')}
-              >
-                <Droplets className="h-4 w-4 mr-1" />
-                Humidity
-              </Button>
-              <Button
-                size="sm"
-                variant={weatherVariable === 'rainfall' ? 'default' : 'outline'}
-                className={weatherVariable === 'rainfall' ? 'bg-cyan-600 hover:bg-cyan-700' : ''}
-                onClick={() => setWeatherVariable('rainfall')}
-              >
-                <CloudRain className="h-4 w-4 mr-1" />
-                Rainfall
-              </Button>
-              <Button
-                size="sm"
-                variant={weatherVariable === 'all' ? 'default' : 'outline'}
-                className={weatherVariable === 'all' ? 'bg-black hover:bg-gray-800' : ''}
-                onClick={() => setWeatherVariable('all')}
-              >
-                All
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={timeSeriesData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                interval={'preserveStartEnd'}
-                tick={{ fontSize: 9 }}
-              />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
-              <Legend />
-              <Line
-                yAxisId="left"
-                type="monotone"
-                dataKey="cases"
-                stroke="#ef4444"
-                strokeWidth={2}
-                name="Cases"
-                dot={false}
-              />
-              {(weatherVariable === 'temperature' || weatherVariable === 'all') && (
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="temperature"
-                  stroke="#f97316"
-                  strokeWidth={2}
-                  name="Temperature (°C)"
-                  dot={false}
-                />
-              )}
-              {(weatherVariable === 'humidity' || weatherVariable === 'all') && (
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="humidity"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  name="Humidity (%)"
-                  dot={false}
-                />
-              )}
-              {(weatherVariable === 'rainfall' || weatherVariable === 'all') && (
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="rainfall"
-                  stroke="#06b6d4"
-                  strokeWidth={2}
-                  name="Rainfall (mm)"
-                  dot={false}
-                />
-              )}
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-10">
+        <div className="lg:col-span-7">
+          <Card className="shadow-md">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="font-headline">Disease Cases vs Weather Variables</CardTitle>
+                  <CardDescription>Correlation between cases and environmental factors</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={weatherVariable === 'temperature' ? 'default' : 'outline'}
+                    className={weatherVariable === 'temperature' ? 'bg-orange-600 hover:bg-orange-700' : ''}
+                    onClick={() => setWeatherVariable('temperature')}
+                  >
+                    <Thermometer className="h-4 w-4 mr-1" />
+                    Temp
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={weatherVariable === 'humidity' ? 'default' : 'outline'}
+                    className={weatherVariable === 'humidity' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+                    onClick={() => setWeatherVariable('humidity')}
+                  >
+                    <Droplets className="h-4 w-4 mr-1" />
+                    Humidity
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={weatherVariable === 'rainfall' ? 'default' : 'outline'}
+                    className={weatherVariable === 'rainfall' ? 'bg-cyan-600 hover:bg-cyan-700' : ''}
+                    onClick={() => setWeatherVariable('rainfall')}
+                  >
+                    <CloudRain className="h-4 w-4 mr-1" />
+                    Rainfall
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={weatherVariable === 'all' ? 'default' : 'outline'}
+                    className={weatherVariable === 'all' ? 'bg-black hover:bg-gray-800' : ''}
+                    onClick={() => setWeatherVariable('all')}
+                  >
+                    All
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart data={timeSeriesData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    interval={'preserveStartEnd'}
+                    tick={{ fontSize: 9 }}
+                  />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="cases"
+                    stroke="#ef4444"
+                    strokeWidth={2}
+                    name="Cases"
+                    dot={false}
+                  />
+                  {(weatherVariable === 'temperature' || weatherVariable === 'all') && (
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="temperature"
+                      stroke="#f97316"
+                      strokeWidth={2}
+                      name="Temperature (°C)"
+                      dot={false}
+                    />
+                  )}
+                  {(weatherVariable === 'humidity' || weatherVariable === 'all') && (
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="humidity"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                      name="Humidity (%)"
+                      dot={false}
+                    />
+                  )}
+                  {(weatherVariable === 'rainfall' || weatherVariable === 'all') && (
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="rainfall"
+                      stroke="#06b6d4"
+                      strokeWidth={2}
+                      name="Rainfall (mm)"
+                      dot={false}
+                    />
+                  )}
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="lg:col-span-3">
+          <WeatherDiseaseTriggers data={weatherDiseaseTriggers} />
+        </div>
+      </div>
     </div>
   );
 }

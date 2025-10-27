@@ -13,10 +13,24 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import NationalCasesBaselineChart from '@/components/dashboard/NationalCasesBaselineChart';
 import { getAlertStats, getWeeklyNationalDataFromAPI, getDistrictAlertData, diseases } from '@/lib/data';
 import { BaselineMethod, WeeklyNationalData } from '@/lib/types';
 import { Info, Loader2, Mail, Send } from 'lucide-react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 const TARGET_YEAR = 2024;
 
@@ -28,6 +42,7 @@ export default function AlertTab() {
   const [receiverEmail, setReceiverEmail] = useState<string>('');
   const [emailBody, setEmailBody] = useState<string>('');
   const [isSending, setIsSending] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Calculate alert stats based on selected disease and method
   const alertStats = useMemo(() => {
@@ -116,9 +131,21 @@ For questions, contact: bangladesh-ewars@email.com`);
     // Simulate email sending
     setTimeout(() => {
       setIsSending(false);
+      setIsDialogOpen(false);
       alert('Alert email sent successfully!');
     }, 1500);
   };
+
+  // Calculate district distribution for pie chart
+  const districtDistribution = useMemo(() => {
+    const districtData = getDistrictAlertData(selectedDisease, baselineMethod, TARGET_YEAR);
+    return districtData
+      .sort((a, b) => b.cases - a.cases)
+      .slice(0, 10)
+      .map((d) => ({ name: d.district, value: d.cases }));
+  }, [selectedDisease, baselineMethod]);
+
+  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4CAF50', '#E91E63'];
 
   return (
     <div className="space-y-6">
@@ -131,8 +158,18 @@ For questions, contact: bangladesh-ewars@email.com`);
               Monitor disease alerts based on baseline thresholds
             </p>
           </div>
-          <div className="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded text-sm font-medium text-blue-900">
-            Data Year: {TARGET_YEAR}
+          <div className="flex flex-col gap-2 items-end">
+            <div className="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded text-sm font-medium text-blue-900">
+              Data Year: {TARGET_YEAR}
+            </div>
+            <Button
+              onClick={() => setIsDialogOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              size="sm"
+            >
+              <Mail className="mr-2 h-4 w-4" />
+              Send Email Alert
+            </Button>
           </div>
         </div>
 
@@ -402,110 +439,144 @@ For questions, contact: bangladesh-ewars@email.com`);
         </Card>
       </div>
 
-      {/* National Cases vs Baseline Chart */}
-      {loading ? (
-        <Card>
-          <CardContent className="flex items-center justify-center h-96">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      {/* National Cases vs Baseline Chart and District Pie Chart */}
+      <div className="grid gap-6 lg:grid-cols-[60%_1fr]">
+        {/* National Cases vs Baseline Chart - 60% */}
+        {loading ? (
+          <Card>
+            <CardContent className="flex items-center justify-center h-96">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            </CardContent>
+          </Card>
+        ) : (
+          <NationalCasesBaselineChart
+            data={weeklyData}
+            year={TARGET_YEAR}
+          />
+        )}
+
+        {/* Cases by District Pie Chart - 40% */}
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="font-headline">Cases by District</CardTitle>
+            <CardDescription>Top 10 districts by case count</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={350}>
+              <PieChart>
+                <Pie
+                  data={districtDistribution}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {districtDistribution.map((_entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
-      ) : (
-        <NationalCasesBaselineChart
-          data={weeklyData}
-          year={TARGET_YEAR}
-        />
-      )}
+      </div>
 
-      {/* Email Alert System */}
-      <Card className="w-full">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Mail className="h-5 w-5 text-blue-600" />
-            <CardTitle>Send Alert Notification</CardTitle>
-          </div>
-          <CardDescription>
-            Email health officials about districts currently at risk
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Sender Email (Greyed Out) */}
+      {/* Email Alert Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-blue-600" />
+              Send Alert Notification
+            </DialogTitle>
+            <DialogDescription>
+              Email health officials about districts currently at risk
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Sender Email (Greyed Out) */}
+              <div className="space-y-2">
+                <Label htmlFor="sender-email" className="text-sm font-medium">
+                  From
+                </Label>
+                <Input
+                  id="sender-email"
+                  type="email"
+                  value="bangladesh-ewars@email.com"
+                  disabled
+                  className="bg-gray-50"
+                />
+              </div>
+
+              {/* Receiver Email */}
+              <div className="space-y-2">
+                <Label htmlFor="receiver-email" className="text-sm font-medium">
+                  To <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="receiver-email"
+                  type="email"
+                  placeholder="recipient@health.gov.bd"
+                  value={receiverEmail}
+                  onChange={(e) => setReceiverEmail(e.target.value)}
+                  className="h-10"
+                />
+              </div>
+            </div>
+
+            {/* Email Body */}
             <div className="space-y-2">
-              <Label htmlFor="sender-email" className="text-sm font-medium">
-                From
+              <Label htmlFor="email-body" className="text-sm font-medium">
+                Message
               </Label>
-              <Input
-                id="sender-email"
-                type="email"
-                value="bangladesh-ewars@email.com"
-                disabled
-                className="bg-gray-50"
+              <Textarea
+                id="email-body"
+                value={emailBody}
+                onChange={(e) => setEmailBody(e.target.value)}
+                className="min-h-[280px] font-mono text-xs leading-relaxed"
+                placeholder="Email body will be generated automatically..."
               />
             </div>
 
-            {/* Receiver Email */}
-            <div className="space-y-2">
-              <Label htmlFor="receiver-email" className="text-sm font-medium">
-                To <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="receiver-email"
-                type="email"
-                placeholder="recipient@health.gov.bd"
-                value={receiverEmail}
-                onChange={(e) => setReceiverEmail(e.target.value)}
-                className="h-10"
-              />
+            {/* Send Button */}
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-xs text-muted-foreground">
+                {alertStats.districtsOnAlert > 0 ? (
+                  <span className="text-orange-600 font-medium">
+                    ⚠️ {alertStats.districtsOnAlert} district{alertStats.districtsOnAlert > 1 ? 's' : ''} currently at risk
+                  </span>
+                ) : (
+                  <span className="text-green-600 font-medium">
+                    ✓ All districts within normal levels
+                  </span>
+                )}
+              </p>
+              <Button
+                onClick={handleSendEmail}
+                disabled={!receiverEmail || isSending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isSending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Alert
+                  </>
+                )}
+              </Button>
             </div>
           </div>
-
-          {/* Email Body */}
-          <div className="space-y-2">
-            <Label htmlFor="email-body" className="text-sm font-medium">
-              Message
-            </Label>
-            <Textarea
-              id="email-body"
-              value={emailBody}
-              onChange={(e) => setEmailBody(e.target.value)}
-              className="min-h-[280px] font-mono text-xs leading-relaxed"
-              placeholder="Email body will be generated automatically..."
-            />
-          </div>
-
-          {/* Send Button */}
-          <div className="flex items-center justify-between pt-2">
-            <p className="text-xs text-muted-foreground">
-              {alertStats.districtsOnAlert > 0 ? (
-                <span className="text-orange-600 font-medium">
-                  ⚠️ {alertStats.districtsOnAlert} district{alertStats.districtsOnAlert > 1 ? 's' : ''} currently at risk
-                </span>
-              ) : (
-                <span className="text-green-600 font-medium">
-                  ✓ All districts within normal levels
-                </span>
-              )}
-            </p>
-            <Button
-              onClick={handleSendEmail}
-              disabled={!receiverEmail || isSending}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              {isSending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" />
-                  Send Alert
-                </>
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -24,45 +24,54 @@ interface WeatherDiseaseTriggersProps {
 }
 
 export default function WeatherDiseaseTriggers({ data }: WeatherDiseaseTriggersProps) {
+  const getIconColor = (variable: string) => {
+    if (variable.includes('Temperature')) return 'text-orange-600';
+    if (variable.includes('Humidity')) return 'text-blue-600';
+    if (variable.includes('Rainfall')) return 'text-cyan-600';
+    return 'text-gray-600';
+  };
+
+  const getIconBgColor = (variable: string) => {
+    if (variable.includes('Temperature')) return 'bg-orange-50';
+    if (variable.includes('Humidity')) return 'bg-blue-50';
+    if (variable.includes('Rainfall')) return 'bg-cyan-50';
+    return 'bg-gray-50';
+  };
+
   return (
     <Card className="h-full flex flex-col shadow-md">
-      <CardHeader>
-        <CardTitle className="font-headline">Weather Impact on Disease Outbreaks</CardTitle>
-        <CardDescription>How different weather variables can influence disease transmission.</CardDescription>
+      <CardHeader className="pb-3 text-center">
+        <CardTitle className="font-headline text-lg">Weather Impact</CardTitle>
+        <CardDescription className="text-xs mt-1">
+          on Disease Outbreaks
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Weather Variable</TableHead>
-              <TableHead>Affected Diseases</TableHead>
-              <TableHead>Impact</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((trigger) => {
-                const Icon = iconMap[trigger.icon];
-                return (
-                    <TableRow key={trigger.id}>
-                        <TableCell className="font-medium">
-                            <div className="flex items-center gap-2">
-                                <Icon className="h-5 w-5 text-muted-foreground" />
-                                <span>{trigger.variable}</span>
-                            </div>
-                        </TableCell>
-                        <TableCell>
-                            <div className="flex flex-wrap gap-1">
-                                {trigger.diseases.map(disease => (
-                                    <Badge key={disease} variant="secondary">{disease}</Badge>
-                                ))}
-                            </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{trigger.impact}</TableCell>
-                    </TableRow>
-                )
-            })}
-          </TableBody>
-        </Table>
+      <CardContent className="flex-1 px-4 py-2">
+        <div className="space-y-3">
+          {data.map((trigger) => {
+            const Icon = iconMap[trigger.icon];
+            return (
+              <div key={trigger.id} className="flex flex-col space-y-2 p-3 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors">
+                <div className="flex items-center gap-2">
+                  <div className={`p-2 rounded-full ${getIconBgColor(trigger.variable)} flex-shrink-0`}>
+                    <Icon className={`h-5 w-5 ${getIconColor(trigger.variable)}`} />
+                  </div>
+                  <h3 className="font-semibold text-sm">{trigger.variable}</h3>
+                </div>
+                <div className="flex flex-wrap gap-1 pl-11">
+                  {trigger.diseases.map(disease => (
+                    <Badge key={disease} variant="secondary" className="text-xs px-2 py-0.5">
+                      {disease}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground leading-snug pl-11">
+                  {trigger.impact}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );
