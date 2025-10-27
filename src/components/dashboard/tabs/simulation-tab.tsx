@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -62,7 +63,12 @@ export default function SimulationTab() {
       {/* Control Panel */}
       <Card className="shadow-md border-2 border-gray-200">
         <CardHeader>
-          <CardTitle className="font-headline text-xl">Simulation Controls</CardTitle>
+          <CardTitle className="font-headline text-xl flex items-center gap-2">
+            Simulation Controls
+            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+              BETA
+            </Badge>
+          </CardTitle>
           <CardDescription>
             Configure outbreak parameters and test intervention strategies
           </CardDescription>
@@ -77,13 +83,10 @@ export default function SimulationTab() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
-                  {districts.map((district) => (
-                    <SelectItem key={district.id} value={district.name}>
-                      {district.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="Dhaka">Dhaka</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-gray-500">Other districts coming soon</p>
             </div>
 
             {/* Disease Type */}

@@ -1,7 +1,24 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Thermometer, Droplets, CloudRain, AlertTriangle, Activity, Bug, Droplet, TrendingUp, TrendingDown } from 'lucide-react';
+import { Thermometer, Droplets, CloudRain, AlertTriangle, Activity, Bug, Droplet, TrendingUp, TrendingDown, ArrowDown, ArrowUp, Snowflake, Wind, CloudSun, Sun, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { WeatherData, DiseaseData } from '@/lib/types';
+
+const tempCategoryIcons = {
+  'snowflake': Snowflake,
+  'wind': Wind,
+  'cloud-sun': CloudSun,
+  'sun': Sun,
+  'flame': Flame,
+};
+
+const tempCategoryColors = {
+  'Cold': 'text-blue-600',
+  'Cool': 'text-cyan-600',
+  'Pleasant': 'text-green-600',
+  'Warm': 'text-yellow-600',
+  'Hot': 'text-orange-600',
+  'Very Hot': 'text-red-600',
+};
 
 const weatherIconMap = {
   Temperature: Thermometer,
@@ -83,11 +100,26 @@ export default function MetricsPanels({ weatherData, diseaseData, weatherError }
               >
                 {item.value}
               </div>
-              {item.subtitle && (
+              {item.label === 'Temperature' && item.tempIcon && item.subtitle ? (
+                <div className="flex items-center gap-1.5 mt-2">
+                  {(() => {
+                    const TempIcon = tempCategoryIcons[item.tempIcon as keyof typeof tempCategoryIcons];
+                    const colorClass = tempCategoryColors[item.subtitle as keyof typeof tempCategoryColors];
+                    return TempIcon ? (
+                      <>
+                        <TempIcon className={cn('h-4 w-4', colorClass)} />
+                        <span className={cn('text-sm font-medium', colorClass)}>
+                          {item.subtitle}
+                        </span>
+                      </>
+                    ) : null;
+                  })()}
+                </div>
+              ) : item.subtitle ? (
                 <p className="text-xs text-muted-foreground mt-1">
                   {item.subtitle}
                 </p>
-              )}
+              ) : null}
             </CardContent>
           </Card>
         );

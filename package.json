@@ -9,7 +9,10 @@
     "build": "next build",
     "start": "next start -p 9002",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:setup": "tsx database/setup.ts",
+    "db:migrate": "tsx database/migrate.ts",
+    "db:reset": "npm run db:setup && npm run db:migrate"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
@@ -40,7 +43,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "dotenv": "^16.5.0",
+    "dotenv": "^16.6.1",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^11.9.1",
     "genkit": "^1.14.1",
@@ -48,8 +51,9 @@
     "maplibre-gl": "^4.5.0",
     "next": "15.3.3",
     "next-auth": "^4.24.11",
-    "papaparse": "^5.4.1",
+    "papaparse": "^5.5.3",
     "patch-package": "^8.0.0",
+    "pg": "^8.16.3",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -63,11 +67,13 @@
     "@tailwindcss/typography": "^0.5.13",
     "@types/node": "^20",
     "@types/papaparse": "^5.3.15",
+    "@types/pg": "^8.15.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "genkit-cli": "^1.14.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

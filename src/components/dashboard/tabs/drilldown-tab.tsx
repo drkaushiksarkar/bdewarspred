@@ -26,16 +26,17 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Loader2, TrendingUp, Activity, Droplets, Thermometer, CloudRain } from 'lucide-react';
-import { fetchDengueData, fetchAWDData, DengueData, AWDData } from '@/lib/drilldown-api';
+import { fetchDengueData, fetchAWDData, fetchMalariaData, DengueData, AWDData, MalariaData } from '@/lib/drilldown-api';
 import { locations } from '@/lib/data';
 
 type WeatherVariable = 'temperature' | 'humidity' | 'rainfall' | 'all';
 
 export default function DrilldownTab() {
-  const [disease, setDisease] = useState<'dengue' | 'awd'>('dengue');
+  const [disease, setDisease] = useState<'dengue' | 'awd' | 'malaria'>('dengue');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('all');
   const [dengueData, setDengueData] = useState<DengueData[]>([]);
   const [awdData, setAWDData] = useState<AWDData[]>([]);
+  const [malariaData, setMalariaData] = useState<MalariaData[]>([]);
   const [loading, setLoading] = useState(true);
   const [weatherVariable, setWeatherVariable] = useState<WeatherVariable>('all');
   const [error, setError] = useState<string | null>(null);
@@ -54,9 +55,13 @@ export default function DrilldownTab() {
       console.log('AWD years available:', years);
       console.log('AWD sample dates:', awdData.slice(0, 5).map(d => d.date));
       return { min: years[0], max: years[years.length - 1] };
+    } else if (disease === 'malaria' && malariaData.length > 0) {
+      const years = [...new Set(malariaData.map(d => new Date(d.date).getFullYear()))].sort((a, b) => a - b);
+      console.log('Malaria years available:', years);
+      return { min: years[0], max: years[years.length - 1] };
     }
     return { min: 2019, max: 2024 };
-  }, [disease, dengueData, awdData]);
+  }, [disease, dengueData, awdData, malariaData]);
 
   // Update year range when disease changes (keep default 2024-2025 on initial load)
   useEffect(() => {
@@ -74,12 +79,14 @@ export default function DrilldownTab() {
         // Try to get cached data
         const cachedDengue = localStorage.getItem('drilldown_dengue_cache');
         const cachedAWD = localStorage.getItem('drilldown_awd_cache');
+        const cachedMalaria = localStorage.getItem('drilldown_malaria_cache');
         const cacheTimestamp = localStorage.getItem('drilldown_cache_timestamp');
         const now = Date.now();
         const cacheMaxAge = 24 * 60 * 60 * 1000; // 24 hours
 
         let dengue = null;
         let awd = null;
+        let malaria = null;
 
         // Use cache if it's less than 24 hours old
         if (cachedDengue && cachedAWD && cacheTimestamp && (now - parseInt(cacheTimestamp)) < cacheMaxAge) {
@@ -87,11 +94,13 @@ export default function DrilldownTab() {
           try {
             dengue = JSON.parse(cachedDengue);
             awd = JSON.parse(cachedAWD);
+            malaria = []; // Malaria disabled for now
           } catch (parseError) {
             console.warn('Failed to parse cached data, fetching fresh data');
             // Clear corrupted cache
             localStorage.removeItem('drilldown_dengue_cache');
             localStorage.removeItem('drilldown_awd_cache');
+            localStorage.removeItem('drilldown_malaria_cache');
             localStorage.removeItem('drilldown_cache_timestamp');
           }
         }
@@ -103,6 +112,8 @@ export default function DrilldownTab() {
             fetchDengueData(),
             fetchAWDData(),
           ]);
+          // Malaria is disabled for now
+          malaria = [];
 
           // Try to cache the data with size check
           try {
@@ -132,6 +143,19 @@ export default function DrilldownTab() {
               }
             }
 
+            if (malaria) {
+              const malariaString = JSON.stringify(malaria);
+              const malariaSizeKB = new Blob([malariaString]).size / 1024;
+              console.log(`Malaria data size: ${malariaSizeKB.toFixed(2)} KB`);
+
+              // Only cache if less than 2MB to avoid quota issues
+              if (malariaSizeKB < 2048) {
+                localStorage.setItem('drilldown_malaria_cache', malariaString);
+              } else {
+                console.warn('Malaria data too large to cache, skipping');
+              }
+            }
+
             localStorage.setItem('drilldown_cache_timestamp', now.toString());
           } catch (cacheError) {
             // Quota exceeded or other storage error - just log and continue
@@ -140,6 +164,7 @@ export default function DrilldownTab() {
             try {
               localStorage.removeItem('drilldown_dengue_cache');
               localStorage.removeItem('drilldown_awd_cache');
+              localStorage.removeItem('drilldown_malaria_cache');
               localStorage.removeItem('drilldown_cache_timestamp');
             } catch (clearError) {
               // Ignore errors when clearing
@@ -167,6 +192,9 @@ export default function DrilldownTab() {
             setError('Failed to load data from APIs. This may be due to CORS or network issues.');
           }
         }
+
+        // Malaria is disabled, set empty array
+        setMalariaData([]);
       } catch (err) {
         console.error('Error loading data:', err);
         setError('Failed to fetch data from APIs. Please check console for details.');
@@ -187,7 +215,7 @@ export default function DrilldownTab() {
       }
       console.log('Filtered dengue data:', data.length, 'records');
       return data;
-    } else {
+    } else if (disease === 'awd') {
       let data = awdData.filter(d => {
         const year = new Date(d.date).getFullYear();
         return year >= yearRange[0] && year <= yearRange[1];
@@ -198,8 +226,18 @@ export default function DrilldownTab() {
       console.log('Filtered AWD data:', data.length, 'records');
       console.log('Sample filtered AWD dates:', data.slice(0, 5).map(d => ({ date: d.date, year: new Date(d.date).getFullYear() })));
       return data;
+    } else {
+      let data = malariaData.filter(d => {
+        const year = new Date(d.date).getFullYear();
+        return year >= yearRange[0] && year <= yearRange[1];
+      });
+      if (selectedDistrict !== 'all') {
+        data = data.filter(d => d.district.toLowerCase() === selectedDistrict.toLowerCase());
+      }
+      console.log('Filtered Malaria data:', data.length, 'records');
+      return data;
     }
-  }, [disease, selectedDistrict, yearRange, dengueData, awdData]);
+  }, [disease, selectedDistrict, yearRange, dengueData, awdData, malariaData]);
 
   // Calculate statistics with insights
   const statistics = useMemo(() => {
@@ -273,7 +311,7 @@ export default function DrilldownTab() {
         peakTempWeek,
         lowTempWeek,
       };
-    } else {
+    } else if (disease === 'awd') {
       const data = filteredData as AWDData[];
       const totalCases = data.reduce((sum, item) => sum + item.daily_cases, 0);
       const avgTemp = data.reduce((sum, item) => sum + item.temperature, 0) / data.length;
@@ -304,6 +342,58 @@ export default function DrilldownTab() {
       data.forEach(item => {
         const monthKey = new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
         casesByMonth[monthKey] = (casesByMonth[monthKey] || 0) + item.daily_cases;
+      });
+      const months = Object.keys(casesByMonth);
+      const maxCasesMonth = months.reduce((a, b) => casesByMonth[a] > casesByMonth[b] ? a : b, months[0]);
+      const minCasesMonth = months.reduce((a, b) => casesByMonth[a] < casesByMonth[b] ? a : b, months[0]);
+
+      return {
+        totalCases,
+        avgTemp: avgTemp.toFixed(1),
+        minTemp: minTemp.toFixed(1),
+        maxTemp: maxTemp.toFixed(1),
+        avgHumidity: avgHumidity.toFixed(1),
+        avgRainfall: avgRainfall.toFixed(1),
+        minRainfall: minRainfall.toFixed(1),
+        maxRainfall: maxRainfall.toFixed(1),
+        peakCasesPeriod: `${maxCasesMonth} (${casesByMonth[maxCasesMonth].toLocaleString()})`,
+        lowCasesPeriod: `${minCasesMonth} (${casesByMonth[minCasesMonth].toLocaleString()})`,
+        peakRainfallWeek,
+        lowRainfallWeek,
+        peakTempWeek,
+        lowTempWeek,
+      };
+    } else {
+      const data = filteredData as MalariaData[];
+      const totalCases = data.reduce((sum, item) => sum + item.weekly_cases, 0);
+      const avgTemp = data.reduce((sum, item) => sum + item.temperature, 0) / data.length;
+      const avgHumidity = data.reduce((sum, item) => sum + item.humidity, 0) / data.length;
+      const avgRainfall = data.reduce((sum, item) => sum + item.rainfall, 0) / data.length;
+
+      const rainfalls = data.map(d => d.rainfall);
+      const temperatures = data.map(d => d.temperature);
+      const minRainfall = Math.min(...rainfalls);
+      const maxRainfall = Math.max(...rainfalls);
+      const minTemp = Math.min(...temperatures);
+      const maxTemp = Math.max(...temperatures);
+
+      // Find peak rainfall date
+      const maxRainfallItem = data.find(d => d.rainfall === maxRainfall);
+      const minRainfallItem = data.find(d => d.rainfall === minRainfall);
+      const peakRainfallWeek = maxRainfallItem ? new Date(maxRainfallItem.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+      const lowRainfallWeek = minRainfallItem ? new Date(minRainfallItem.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+
+      // Find peak temperature date
+      const maxTempItem = data.find(d => d.temperature === maxTemp);
+      const minTempItem = data.find(d => d.temperature === minTemp);
+      const peakTempWeek = maxTempItem ? new Date(maxTempItem.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+      const lowTempWeek = minTempItem ? new Date(minTempItem.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+
+      // Find peak cases period (by month)
+      const casesByMonth: { [key: string]: number } = {};
+      data.forEach(item => {
+        const monthKey = new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+        casesByMonth[monthKey] = (casesByMonth[monthKey] || 0) + item.weekly_cases;
       });
       const months = Object.keys(casesByMonth);
       const maxCasesMonth = months.reduce((a, b) => casesByMonth[a] > casesByMonth[b] ? a : b, months[0]);
@@ -392,7 +482,7 @@ export default function DrilldownTab() {
         humidity: item.humidity,
         rainfall: item.rainfall,
       }));
-    } else {
+    } else if (disease === 'awd') {
       const data = filteredData as AWDData[];
 
       // Aggregate data by date (sum cases, average weather variables)
@@ -448,6 +538,62 @@ export default function DrilldownTab() {
         humidity: item.humidity,
         rainfall: item.rainfall,
       }));
+    } else {
+      const data = filteredData as MalariaData[];
+
+      // Aggregate data by date (sum cases, average weather variables)
+      const aggregatedMap = new Map<string, {
+        date: string,
+        cases: number,
+        temperature: number[],
+        humidity: number[],
+        rainfall: number[]
+      }>();
+
+      data.forEach(item => {
+        const dateKey = item.date.split('T')[0]; // Get date part only
+        if (!aggregatedMap.has(dateKey)) {
+          aggregatedMap.set(dateKey, {
+            date: dateKey,
+            cases: 0,
+            temperature: [],
+            humidity: [],
+            rainfall: [],
+          });
+        }
+        const agg = aggregatedMap.get(dateKey)!;
+        agg.cases += item.weekly_cases;
+        agg.temperature.push(item.temperature);
+        agg.humidity.push(item.humidity);
+        agg.rainfall.push(item.rainfall);
+      });
+
+      // Convert to array and sort
+      const aggregatedData = Array.from(aggregatedMap.values())
+        .map(item => ({
+          date: item.date,
+          cases: item.cases,
+          temperature: item.temperature.reduce((a, b) => a + b, 0) / item.temperature.length,
+          humidity: item.humidity.reduce((a, b) => a + b, 0) / item.humidity.length,
+          rainfall: item.rainfall.reduce((a, b) => a + b, 0) / item.rainfall.length,
+        }))
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      // Sample data evenly to show the full date range
+      const sampleSize = 100;
+      let sampledData = aggregatedData;
+      if (aggregatedData.length > sampleSize) {
+        const step = aggregatedData.length / sampleSize;
+        sampledData = Array.from({ length: sampleSize }, (_, i) => aggregatedData[Math.floor(i * step)]);
+      }
+
+      return sampledData.map(item => ({
+        date: new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        cases: item.cases,
+        temperature: item.temperature,
+        humidity: item.humidity,
+        rainfall: item.rainfall,
+      }));
     }
   }, [disease, filteredData]);
 
@@ -462,7 +608,7 @@ export default function DrilldownTab() {
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10)
         .map(([name, value]) => ({ name, value }));
-    } else {
+    } else if (disease === 'awd') {
       const districtCounts: { [key: string]: number } = {};
       awdData.forEach(item => {
         const district = item.district.charAt(0).toUpperCase() + item.district.slice(1);
@@ -472,8 +618,18 @@ export default function DrilldownTab() {
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10)
         .map(([name, value]) => ({ name, value }));
+    } else {
+      const districtCounts: { [key: string]: number } = {};
+      malariaData.forEach(item => {
+        const district = item.district.charAt(0).toUpperCase() + item.district.slice(1);
+        districtCounts[district] = (districtCounts[district] || 0) + item.weekly_cases;
+      });
+      return Object.entries(districtCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([name, value]) => ({ name, value }));
     }
-  }, [disease, dengueData, awdData]);
+  }, [disease, dengueData, awdData, malariaData]);
 
   const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4CAF50', '#E91E63'];
 
@@ -520,14 +676,14 @@ export default function DrilldownTab() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
               <Label className="text-sm font-medium">Disease</Label>
-              <Select value={disease} onValueChange={(val: 'dengue' | 'awd') => setDisease(val)}>
+              <Select value={disease} onValueChange={(val: 'dengue' | 'awd' | 'malaria') => setDisease(val)}>
                 <SelectTrigger className="bg-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="dengue">Dengue</SelectItem>
                   <SelectItem value="awd">Acute Watery Diarrhoea</SelectItem>
-                  <SelectItem value="malaria" disabled>Malaria (No API Yet)</SelectItem>
+                  <SelectItem value="malaria" disabled>Malaria</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -582,7 +738,7 @@ export default function DrilldownTab() {
           <CardContent>
             <div className="text-2xl font-bold text-red-700">{statistics.totalCases.toLocaleString()}</div>
             <p className="text-xs text-gray-600 mt-1">
-              {disease === 'dengue' ? 'Weekly hospitalized' : 'Daily cases'}
+              {disease === 'dengue' ? 'Weekly hospitalized' : disease === 'awd' ? 'Daily cases' : 'Weekly cases'}
             </p>
             <p className="text-xs text-gray-500 mt-2">
               Peak: {statistics.peakCasesPeriod}
@@ -666,7 +822,7 @@ export default function DrilldownTab() {
           <CardHeader>
             <CardTitle className="font-headline">Cases Over Time</CardTitle>
             <CardDescription>
-              {disease === 'dengue' ? 'Weekly cases trend' : 'Daily cases trend'}
+              {disease === 'dengue' ? 'Weekly cases trend' : disease === 'awd' ? 'Daily cases trend' : 'Weekly cases trend'}
             </CardDescription>
           </CardHeader>
           <CardContent>

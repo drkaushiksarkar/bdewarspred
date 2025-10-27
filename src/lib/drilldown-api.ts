@@ -21,9 +21,20 @@ export interface AWDData {
   rainfall: number;
 }
 
+export interface MalariaData {
+  id: number;
+  district: string;
+  date: string;
+  weekly_cases: number;
+  temperature: number;
+  humidity: number;
+  rainfall: number;
+}
+
 // Use Next.js API routes as proxy to avoid CORS issues
 const DENGUE_API = '/api/drilldown/dengue';
 const AWD_API = '/api/drilldown/awd';
+const MALARIA_API = '/api/drilldown/malaria';
 
 /**
  * Fetches all dengue data from the API
@@ -97,6 +108,44 @@ export function filterDengueByDistrict(data: DengueData[], district: string): De
  * Filters AWD data by district
  */
 export function filterAWDByDistrict(data: AWDData[], district: string): AWDData[] {
+  if (!district || district === 'all') return data;
+  return data.filter(item => item.district.toLowerCase() === district.toLowerCase());
+}
+
+/**
+ * Fetches all malaria data from the API
+ */
+export async function fetchMalariaData(): Promise<MalariaData[] | null> {
+  try {
+    console.log('Fetching malaria data from:', MALARIA_API);
+    const response = await fetch(MALARIA_API, {
+      mode: 'cors',
+      cache: 'no-cache',
+    });
+
+    console.log('Malaria API response status:', response.status);
+
+    if (!response.ok) {
+      console.error(`Malaria API error: ${response.status} ${response.statusText}`);
+      return null;
+    }
+
+    const data = await response.json();
+    console.log('Malaria data parsed successfully, records:', data.length);
+    return data;
+  } catch (error) {
+    console.error('Error fetching malaria data:', error);
+    if (error instanceof TypeError) {
+      console.error('This is likely a CORS error. The API server needs to allow cross-origin requests.');
+    }
+    return null;
+  }
+}
+
+/**
+ * Filters malaria data by district
+ */
+export function filterMalariaByDistrict(data: MalariaData[], district: string): MalariaData[] {
   if (!district || district === 'all') return data;
   return data.filter(item => item.district.toLowerCase() === district.toLowerCase());
 }

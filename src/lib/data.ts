@@ -58,12 +58,27 @@ export function getRealTimeSeriesData(districtName: string, disease: string): Ti
 }
 
 
-export const getAggregatedDenguePredictions = (): { [districtName: string]: number } => {
+export const getAggregatedDenguePredictions = (districtFilter?: string, dateFrom?: string, dateTo?: string): { [districtName: string]: number } => {
   const allData: any[] = modelOutput;
   const totals: { [districtName: string]: number } = {};
 
   allData.forEach(item => {
     const districtName = item.district;
+    const itemDate = item.date;
+
+    // Apply district filter if provided
+    if (districtFilter && districtName?.toLowerCase() !== districtFilter.toLowerCase()) {
+      return;
+    }
+
+    // Apply date range filter if provided
+    if (dateFrom && itemDate < dateFrom) {
+      return;
+    }
+    if (dateTo && itemDate > dateTo) {
+      return;
+    }
+
     if (districtName) {
       if (!totals[districtName]) {
         totals[districtName] = 0;
@@ -75,16 +90,30 @@ export const getAggregatedDenguePredictions = (): { [districtName: string]: numb
   return totals;
 };
 
-export const getAggregatedDiarrhoeaPredictions = (): { [districtName: string]: number } => {
+export const getAggregatedDiarrhoeaPredictions = (districtFilter?: string, dateFrom?: string, dateTo?: string): { [districtName: string]: number } => {
   const allData: any[] = diarrhoeaData;
   const totals: { [districtName: string]: number } = {};
-  
+
   allData.forEach(item => {
     // Correctly match the lowercase district from JSON to the proper-case name
     const geojsonDistrictName = Object.keys(locations).find(
         (key: any) => locations[key].name.toLowerCase() === item.district.toLowerCase() && locations[key].level === 'district'
     );
     const districtName = geojsonDistrictName ? locations[geojsonDistrictName].name : item.district;
+    const itemDate = item.date;
+
+    // Apply district filter if provided
+    if (districtFilter && districtName?.toLowerCase() !== districtFilter.toLowerCase()) {
+      return;
+    }
+
+    // Apply date range filter if provided
+    if (dateFrom && itemDate < dateFrom) {
+      return;
+    }
+    if (dateTo && itemDate > dateTo) {
+      return;
+    }
 
     if (districtName) {
       if (!totals[districtName]) {
@@ -174,17 +203,18 @@ export const weatherData: WeatherData[] = [
 ];
 
 // Calculate total monthly cases for each disease
-export function getMonthlyCases(): DiseaseData[] {
-  // Get aggregated predictions
-  const dengueTotals = getAggregatedDenguePredictions();
-  const diarrhoeaTotals = getAggregatedDiarrhoeaPredictions();
+export function getMonthlyCases(districtFilter?: string, dateFrom?: string, dateTo?: string): DiseaseData[] {
+  // Get aggregated predictions with filters applied
+  const dengueTotals = getAggregatedDenguePredictions(districtFilter, dateFrom, dateTo);
+  const diarrhoeaTotals = getAggregatedDiarrhoeaPredictions(districtFilter, dateFrom, dateTo);
 
-  // Calculate total predicted cases across all districts
+  // Calculate total predicted cases across all districts (or filtered district)
   const dengueCases = Math.round(Object.values(dengueTotals).reduce((sum, val) => sum + val, 0));
   const diarrhoeaCases = Math.round(Object.values(diarrhoeaTotals).reduce((sum, val) => sum + val, 0));
 
   // For malaria, we'll use a calculated estimate based on risk data
   // Since there's no specific malaria prediction data, we'll estimate based on high-risk areas
+  // Note: Malaria doesn't have detailed prediction data, so it's not filtered by date range
   const malariaEstimate = Math.round(malariaRiskData.reduce((sum, area) => {
     // Estimate cases based on risk score (higher risk = more cases)
     return sum + (area.risk_score * 10); // Scale factor for estimation

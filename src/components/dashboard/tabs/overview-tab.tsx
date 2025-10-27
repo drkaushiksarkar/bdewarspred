@@ -24,11 +24,35 @@ async function fetchAndFormatWeatherData(): Promise<{data: WeatherData[], error:
 
     const { temp, temp_min, temp_max, humidity, rainfall, weather_description } = liveWeather;
 
+    // Determine temperature category based on thresholds
+    let tempCategory = '';
+    let tempIcon = '';
+    if (temp < 15) {
+      tempCategory = 'Cold';
+      tempIcon = 'snowflake';
+    } else if (temp >= 15 && temp < 20) {
+      tempCategory = 'Cool';
+      tempIcon = 'wind';
+    } else if (temp >= 20 && temp < 25) {
+      tempCategory = 'Pleasant';
+      tempIcon = 'cloud-sun';
+    } else if (temp >= 25 && temp < 30) {
+      tempCategory = 'Warm';
+      tempIcon = 'sun';
+    } else if (temp >= 30 && temp < 35) {
+      tempCategory = 'Hot';
+      tempIcon = 'flame';
+    } else {
+      tempCategory = 'Very Hot';
+      tempIcon = 'flame';
+    }
+
     const weatherData: WeatherData[] = [
       {
         label: 'Temperature',
         value: `${temp.toFixed(1)}°C`,
-        subtitle: `Min: ${temp_min.toFixed(1)}°C / Max: ${temp_max.toFixed(1)}°C`,
+        subtitle: tempCategory,
+        tempIcon: tempIcon,
         is_extreme: temp > 35
       },
       {
@@ -53,8 +77,10 @@ async function fetchAndFormatWeatherData(): Promise<{data: WeatherData[], error:
 
 export default function OverviewTab() {
   const searchParams = useSearchParams();
-  const districtId = searchParams.get('district') || '47';
+  const districtId = searchParams.get('district'); // Don't default, allow null
   const disease = searchParams.get('disease') || 'dengue';
+  const dateFrom = searchParams.get('from') || '';
+  const dateTo = searchParams.get('to') || '';
 
   const [weatherData, setWeatherData] = React.useState<WeatherData[]>([]);
   const [diseaseData, setDiseaseData] = React.useState<DiseaseData[]>([]);
@@ -68,9 +94,22 @@ export default function OverviewTab() {
     }
     loadWeather();
 
-    const monthlyCases = getMonthlyCases();
+    // Get district name from district ID (only if a district is explicitly selected)
+    let districtName: string | undefined = undefined;
+    if (districtId) {
+      const selectedDistrict = locations.find(l => l.id === districtId && l.level === 'district');
+      districtName = selectedDistrict ? selectedDistrict.name : undefined;
+    }
+
+    // Get monthly cases with filters applied
+    // If no district selected, show national totals (no district filter)
+    const monthlyCases = getMonthlyCases(
+      districtName,
+      dateFrom || undefined,
+      dateTo || undefined
+    );
     setDiseaseData(monthlyCases);
-  }, []);
+  }, [districtId, dateFrom, dateTo]);
 
   const timeSeriesData = React.useMemo(() => {
     const selectedDistrict = locations.find(l => l.id === districtId && l.level === 'district');

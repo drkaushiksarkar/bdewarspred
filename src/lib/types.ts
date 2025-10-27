@@ -37,6 +37,9 @@ export type WeatherData = {
   value: string;
   is_extreme?: boolean;
   subtitle?: string;
+  temp_min?: number;
+  temp_max?: number;
+  tempIcon?: string;
 };
 
 export type DiseaseData = {
