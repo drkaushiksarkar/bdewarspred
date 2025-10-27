@@ -2,11 +2,11 @@ import { Pool, PoolClient, QueryResult } from 'pg';
 
 // Database configuration from environment variables
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'ewars',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
+  host: process.env.PG_HOST || process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.PG_PORT || process.env.DB_PORT || '5432'),
+  database: process.env.PG_DB || process.env.DB_NAME || 'ewars',
+  user: process.env.PG_USER || process.env.DB_USER || 'postgres',
+  password: process.env.PG_PASS || process.env.DB_PASSWORD || 'postgres',
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
@@ -96,7 +96,7 @@ export async function closePool(): Promise<void> {
 }
 
 // Schema name from environment
-export const SCHEMA = process.env.DB_SCHEMA || 'dashboard';
+export const SCHEMA = process.env.DB_SCHEMA || 'public';
 
 /**
  * Helper to build schema-qualified table names

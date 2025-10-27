@@ -93,3 +93,15 @@ export type WeeklyNationalData = {
   cases: number;
   baseline: number;
 };
+
+export type AccelerationAlertData = {
+  district: string;
+  year: number;
+  epi_week: number;
+  last_week_cases: number;
+  this_week_actual: number;
+  this_week_predicted: number;
+  next_week_forecast: number;
+  growth_rate_wow: number;
+  growth_flag: string;
+};

@@ -6,7 +6,7 @@
  */
 
 import { query, table } from '@/lib/db';
-import type { TimeSeriesDataPoint } from '@/lib/types';
+import type { TimeSeriesDataPoint, AccelerationAlertData } from '@/lib/types';
 
 /**
  * Get time series data for a specific district and disease from database
@@ -202,6 +202,53 @@ export async function getMalariaPredictionsFromDB(): Promise<
     return result.rows;
   } catch (error) {
     console.error('Error fetching malaria predictions:', error);
+    return [];
+  }
+}
+
+/**
+ * Get top districts by last week cases from acceleration alerts table
+ */
+export async function getTopDistrictsByLastWeekCasesFromDB(
+  disease: string,
+  limit: number = 6
+): Promise<AccelerationAlertData[]> {
+  // Map disease to table name
+  const tableMap: { [key: string]: string } = {
+    dengue: 'dengue_acceleration_alerts',
+    diarrhoea: 'diarrhoea_acceleration_alerts',
+    malaria: 'malaria_acceleration_alerts',
+  };
+
+  const tableName = tableMap[disease];
+  if (!tableName) {
+    console.warn(`No acceleration alerts table for disease: ${disease}`);
+    return [];
+  }
+
+  try {
+    const result = await query<AccelerationAlertData>(
+      `SELECT
+        district,
+        year,
+        epi_week,
+        last_week_cases,
+        this_week_actual,
+        this_week_predicted,
+        next_week_forecast,
+        growth_rate_wow,
+        growth_flag
+       FROM ${tableName}
+       WHERE year = (SELECT MAX(year) FROM ${tableName})
+         AND epi_week = (SELECT MAX(epi_week) FROM ${tableName} WHERE year = (SELECT MAX(year) FROM ${tableName}))
+       ORDER BY last_week_cases DESC
+       LIMIT $1`,
+      [limit]
+    );
+
+    return result.rows;
+  } catch (error) {
+    console.error(`Error fetching acceleration alerts for ${disease}:`, error);
     return [];
   }
 }

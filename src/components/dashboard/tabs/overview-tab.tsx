@@ -4,15 +4,12 @@ import { useSearchParams } from 'next/navigation';
 import MetricsPanels from '../metrics-panels';
 import CombinedPredictionChart from '../CombinedPredictionChart';
 import FilterBar from '../filter-bar';
-import RiskHeatmap from '../risk-heatmap';
+import DistrictAccelerationCards from '../district-acceleration-cards';
 import { getLiveWeatherData } from '@/lib/weather';
-import type { WeatherData, DiseaseData, RiskData } from '@/lib/types';
+import type { WeatherData, DiseaseData, AccelerationAlertData } from '@/lib/types';
 import React from 'react';
 import {
   getRealTimeSeriesData,
-  dengueRiskData,
-  malariaRiskData,
-  diarrhoeaRiskData,
   locations,
   getMonthlyCases,
 } from '@/lib/data';
@@ -85,6 +82,7 @@ export default function OverviewTab() {
   const [weatherData, setWeatherData] = React.useState<WeatherData[]>([]);
   const [diseaseData, setDiseaseData] = React.useState<DiseaseData[]>([]);
   const [weatherError, setWeatherError] = React.useState(false);
+  const [accelerationAlerts, setAccelerationAlerts] = React.useState<AccelerationAlertData[]>([]);
 
   React.useEffect(() => {
     async function loadWeather() {
@@ -109,26 +107,31 @@ export default function OverviewTab() {
       dateTo || undefined
     );
     setDiseaseData(monthlyCases);
-  }, [districtId, dateFrom, dateTo]);
+
+    // Fetch acceleration alerts data from API
+    async function loadAccelerationAlerts() {
+      try {
+        const response = await fetch(`/api/acceleration-alerts?disease=${disease}&limit=6`);
+        if (response.ok) {
+          const alerts = await response.json();
+          setAccelerationAlerts(alerts);
+        } else {
+          console.error('Failed to fetch acceleration alerts');
+          setAccelerationAlerts([]);
+        }
+      } catch (error) {
+        console.error('Error loading acceleration alerts:', error);
+        setAccelerationAlerts([]);
+      }
+    }
+    loadAccelerationAlerts();
+  }, [districtId, dateFrom, dateTo, disease]);
 
   const timeSeriesData = React.useMemo(() => {
     const selectedDistrict = locations.find(l => l.id === districtId && l.level === 'district');
     const districtName = selectedDistrict ? selectedDistrict.name : 'Dhaka';
     return getRealTimeSeriesData(districtName, disease);
   }, [districtId, disease]);
-
-  const riskDataForDisease: RiskData[] = React.useMemo(() => {
-    switch (disease) {
-      case 'dengue':
-        return dengueRiskData;
-      case 'malaria':
-        return malariaRiskData;
-      case 'diarrhoea':
-        return diarrhoeaRiskData;
-      default:
-        return dengueRiskData;
-    }
-  }, [disease]);
 
   return (
     <div className="space-y-6">
@@ -138,10 +141,10 @@ export default function OverviewTab() {
       {/* 6 Metric Cards */}
       <MetricsPanels weatherData={weatherData} diseaseData={diseaseData} weatherError={weatherError} />
 
-      {/* Prediction Chart and Risk Heatmap */}
+      {/* Prediction Chart and District Acceleration Cards */}
       <div className="grid gap-6 lg:grid-cols-2">
         <CombinedPredictionChart data={timeSeriesData} />
-        <RiskHeatmap data={riskDataForDisease} />
+        <DistrictAccelerationCards data={accelerationAlerts} />
       </div>
     </div>
   );
