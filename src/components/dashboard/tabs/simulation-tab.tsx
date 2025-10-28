@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Play, Pause, RotateCcw, Syringe, Droplets, ShieldCheck, Home } from 'lucide-react';
+import { Play, Pause, RotateCcw, Syringe, Droplets, ShieldCheck, FlaskConical, Users } from 'lucide-react';
 import DiseaseSpreadMap from '../DiseaseSpreadMap';
 import { locations } from '@/lib/data';
 
@@ -143,7 +143,7 @@ export default function SimulationTab() {
           {/* Intervention Buttons */}
           <div className="mt-6 space-y-3">
             <Label className="text-sm font-medium">Public Health Interventions</Label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <Button
                 variant={interventions.includes('vaccination') ? 'default' : 'outline'}
                 className={
@@ -181,16 +181,28 @@ export default function SimulationTab() {
                 Water Sanitation
               </Button>
               <Button
-                variant={interventions.includes('quarantine') ? 'default' : 'outline'}
+                variant={interventions.includes('surge-labs') ? 'default' : 'outline'}
                 className={
-                  interventions.includes('quarantine')
+                  interventions.includes('surge-labs')
+                    ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                    : ''
+                }
+                onClick={() => toggleIntervention('surge-labs')}
+              >
+                <FlaskConical className="h-4 w-4 mr-2" />
+                Surge Labs
+              </Button>
+              <Button
+                variant={interventions.includes('community-bcc') ? 'default' : 'outline'}
+                className={
+                  interventions.includes('community-bcc')
                     ? 'bg-amber-600 hover:bg-amber-700 text-white'
                     : ''
                 }
-                onClick={() => toggleIntervention('quarantine')}
+                onClick={() => toggleIntervention('community-bcc')}
               >
-                <Home className="h-4 w-4 mr-2" />
-                Quarantine
+                <Users className="h-4 w-4 mr-2" />
+                Community BCC
               </Button>
             </div>
           </div>
@@ -250,10 +262,10 @@ export default function SimulationTab() {
               <p className="text-sm text-blue-800 leading-relaxed">
                 This isochrone-based simulation visualizes disease spread from a selected origin district over time.
                 Each expanding ring represents one week of disease progression. The spread rate is influenced by the
-                basic reproduction number (R₀) and can be controlled through public health interventions. Interventions
-                reduce the effective R₀ value: Vaccination (40% reduction), Mosquito Control (30% reduction),
-                Water Sanitation (25% reduction), and Quarantine (50% reduction). Multiple interventions can be
-                combined for greater effect.
+                basic reproduction number (R₀) and controlled through a game-theoretic allocator that optimizes
+                intervention mix. Interventions include: Vaccination (45% R₀ reduction), Mosquito Control (35%),
+                Water Sanitation (40%), Surge Labs (25%), and Community BCC (30%). The allocator uses cost-effectiveness
+                analysis with diminishing returns to determine the optimal intervention strategy.
               </p>
             </div>
           </div>

@@ -1,14 +1,19 @@
 "use client";
 
-import FeatureImportanceChart from '../feature-importance-chart';
-import { featureImportanceData } from '@/lib/data';
+import { useState } from 'react';
+import ClimateInfluenceCard from '../climate-influence-card';
+import ModelMetricsCards from '../model-metrics-cards';
 
 export default function ModelTab() {
+  const [disease, setDisease] = useState('dengue');
+
   return (
     <div className="space-y-6">
-      <div className="h-[600px]">
-        <FeatureImportanceChart data={featureImportanceData} />
-      </div>
+      {/* Model Performance Metrics */}
+      <ModelMetricsCards disease={disease} setDisease={setDisease} />
+
+      {/* Climate Influence on Disease */}
+      <ClimateInfluenceCard disease={disease} />
     </div>
   );
 }

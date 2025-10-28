@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Card } from '@/components/ui/card';
+import { allocateInterventions, calculateExpectedCases, calculateRiskLevel } from '@/lib/game-theoretic-allocator';
 
 interface DiseaseSpreadMapProps {
   originDistrict: string;
@@ -28,6 +29,26 @@ export default function DiseaseSpreadMap({
   const [currentWeek, setCurrentWeek] = useState(0);
   const [isContainerReady, setIsContainerReady] = useState(false);
   const [bangladeshGeoJSON, setBangladeshGeoJSON] = useState<any>(null);
+  const [weatherData, setWeatherData] = useState<any>(null);
+
+  // Fetch weather data from database
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      try {
+        const response = await fetch(
+          `/api/simulation/weather-data?disease=${disease}&district=${originDistrict}`
+        );
+        const data = await response.json();
+        if (data.success) {
+          setWeatherData(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      }
+    };
+
+    fetchWeatherData();
+  }, [disease, originDistrict]);
 
   // Fetch Bangladesh GeoJSON
   useEffect(() => {
@@ -130,7 +151,7 @@ export default function DiseaseSpreadMap({
   useEffect(() => {
     if (!map.current || !map.current.isStyleLoaded() || currentWeek === 0) return;
 
-    const spreadRadius = calculateSpreadRadius(currentWeek, reproductionNumber, interventions);
+    const spreadRadius = calculateSpreadRadius(currentWeek, reproductionNumber, interventions, disease);
 
     // Remove old isochrone layers and sources
     for (let i = 1; i <= 8; i++) {
@@ -152,7 +173,7 @@ export default function DiseaseSpreadMap({
     for (let week = 1; week <= currentWeek; week++) {
       const radius = spreadRadius[week - 1];
       const intensity = 1 - (week / currentWeek) * 0.7;
-      const color = getDiseaseColor(disease, intensity);
+      const color = getDiseaseColor(disease);
 
       // Create a circle around origin district
       const center = getDistrictCenter(originDistrict);
@@ -201,15 +222,69 @@ export default function DiseaseSpreadMap({
           position: 'relative',
         }}
       />
-      {currentWeek > 0 && (
-        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg">
-          <div className="text-sm font-medium text-gray-700">Simulation Progress</div>
-          <div className="text-2xl font-bold text-black mt-1">Week {currentWeek}</div>
-          <div className="text-xs text-gray-500 mt-1">
-            Est. Cases: {Math.round(initialCases * Math.pow(reproductionNumber, currentWeek)).toLocaleString()}
+      {currentWeek > 0 && (() => {
+        // Calculate intervention allocation and post-intervention metrics
+        const allocation = allocateInterventions(disease, reproductionNumber, 1.0, interventions);
+        const expectedCases = calculateExpectedCases(initialCases, allocation.effectiveR0, currentWeek);
+        const risk = calculateRiskLevel(allocation.effectiveR0, expectedCases);
+
+        return (
+          <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg min-w-[280px]">
+            <div className="text-sm font-medium text-gray-700">Simulation Progress</div>
+            <div className="text-2xl font-bold text-black mt-1">Week {currentWeek}</div>
+
+            <div className="mt-3 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Expected Cases:</span>
+                <span className="text-sm font-semibold text-black">{expectedCases.toLocaleString()}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Effective R₀:</span>
+                <span className="text-sm font-semibold text-black">{allocation.effectiveR0.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">R₀ Reduction:</span>
+                <span className="text-sm font-semibold text-green-600">
+                  {(allocation.totalR0Reduction * 100).toFixed(1)}%
+                </span>
+              </div>
+
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-600">Risk Level:</span>
+                  <span
+                    className="text-sm font-bold px-2 py-1 rounded"
+                    style={{
+                      backgroundColor: risk.color + '20',
+                      color: risk.color
+                    }}
+                  >
+                    {risk.level}
+                  </span>
+                </div>
+              </div>
+
+              {interventions.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-gray-200">
+                  <div className="text-xs text-gray-600 mb-1">Active Interventions:</div>
+                  <div className="flex flex-wrap gap-1">
+                    {allocation.optimalMix.map((int) => (
+                      <span
+                        key={int}
+                        className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded"
+                      >
+                        {int.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </Card>
   );
 }
@@ -218,16 +293,14 @@ export default function DiseaseSpreadMap({
 function calculateSpreadRadius(
   week: number,
   r0: number,
-  interventions: string[]
+  interventions: string[],
+  disease: string
 ): number[] {
   const radii: number[] = [];
-  let effectiveR0 = r0;
 
-  // Apply intervention effects
-  if (interventions.includes('vaccination')) effectiveR0 *= 0.6;
-  if (interventions.includes('mosquito-control')) effectiveR0 *= 0.7;
-  if (interventions.includes('water-sanitation')) effectiveR0 *= 0.75;
-  if (interventions.includes('quarantine')) effectiveR0 *= 0.5;
+  // Use game-theoretic allocator to determine effective R0
+  const allocation = allocateInterventions(disease, r0, 1.0, interventions);
+  const effectiveR0 = allocation.effectiveR0;
 
   for (let w = 1; w <= week; w++) {
     // Radius grows based on effective R0 (in km)
@@ -238,7 +311,7 @@ function calculateSpreadRadius(
   return radii;
 }
 
-function getDiseaseColor(disease: string, intensity: number): string {
+function getDiseaseColor(disease: string): string {
   const colors = {
     dengue: [255, 50, 50], // Red
     malaria: [138, 43, 226], // Purple
