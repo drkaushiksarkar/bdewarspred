@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { Target, TrendingUp, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -100,7 +101,7 @@ export default function ModelMetricsCards({ disease, setDisease }: ModelMetricsC
             <SelectContent>
               <SelectItem value="dengue">Dengue</SelectItem>
               <SelectItem value="diarrhoea">Diarrhoea</SelectItem>
-              <SelectItem value="malaria">Malaria</SelectItem>
+              <SelectItem value="malaria" disabled>Malaria</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -118,7 +119,12 @@ export default function ModelMetricsCards({ disease, setDisease }: ModelMetricsC
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Model Performance</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-semibold">Model Performance</h2>
+          <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+            BETA
+          </Badge>
+        </div>
         <Select value={disease} onValueChange={setDisease}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select disease" />
@@ -126,7 +132,7 @@ export default function ModelMetricsCards({ disease, setDisease }: ModelMetricsC
           <SelectContent>
             <SelectItem value="dengue">Dengue</SelectItem>
             <SelectItem value="diarrhoea">Diarrhoea</SelectItem>
-            <SelectItem value="malaria">Malaria</SelectItem>
+            <SelectItem value="malaria" disabled>Malaria</SelectItem>
           </SelectContent>
         </Select>
       </div>
