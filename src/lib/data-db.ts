@@ -252,3 +252,57 @@ export async function getTopDistrictsByLastWeekCasesFromDB(
     return [];
   }
 }
+
+/**
+ * Helper function to properly capitalize district names
+ * Converts "cox's bazar" -> "Cox's Bazar", "cumilla" -> "Cumilla"
+ */
+function capitalizeDistrictName(name: string): string {
+  return name
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+/**
+ * Get aggregated district predictions from acceleration alerts table for disease maps
+ * Returns a mapping of district names to predicted cases (this_week_predicted)
+ */
+export async function getDistrictPredictionsFromAccelerationAlerts(
+  disease: string
+): Promise<{ [districtName: string]: number }> {
+  // Map disease to table name
+  const tableMap: { [key: string]: string } = {
+    dengue: 'dengue_acceleration_alerts',
+    diarrhoea: 'diarrhoea_acceleration_alerts',
+  };
+
+  const tableName = tableMap[disease];
+  if (!tableName) {
+    console.warn(`No acceleration alerts table for disease: ${disease}`);
+    return {};
+  }
+
+  try {
+    const result = await query<{ district: string; this_week_predicted: number }>(
+      `SELECT
+        district,
+        this_week_predicted
+       FROM ${tableName}
+       WHERE year = (SELECT MAX(year) FROM ${tableName})
+         AND epi_week = (SELECT MAX(epi_week) FROM ${tableName} WHERE year = (SELECT MAX(year) FROM ${tableName}))`
+    );
+
+    const totals: { [districtName: string]: number } = {};
+    result.rows.forEach((row) => {
+      // Properly capitalize district names to match GeoJSON format
+      const districtName = capitalizeDistrictName(row.district);
+      totals[districtName] = row.this_week_predicted || 0;
+    });
+
+    return totals;
+  } catch (error) {
+    console.error(`Error fetching district predictions for ${disease}:`, error);
+    return {};
+  }
+}

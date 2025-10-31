@@ -11,14 +11,56 @@ import {
 import DistrictSatelliteMap from '../DistrictSatelliteMap';
 import MalariaMap from '../malaria-map';
 import DiarrhoeaMap from '../DiarrhoeaMap';
-import { getAggregatedDenguePredictions } from '@/lib/data';
 import React from 'react';
 
 export default function DiseaseMapsTab() {
   const [selectedDisease, setSelectedDisease] = React.useState<string>('dengue');
-  const denguePredictionData = React.useMemo(() => getAggregatedDenguePredictions(), []);
+  const [denguePredictionData, setDenguePredictionData] = React.useState<{ [districtName: string]: number }>({});
+  const [diarrhoeaPredictionData, setDiarrhoeaPredictionData] = React.useState<{ [districtName: string]: number }>({});
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+
+  // Fetch all data on mount
+  React.useEffect(() => {
+    const fetchAllData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch both datasets in parallel
+        const [dengueResponse, diarrhoeaResponse] = await Promise.all([
+          fetch('/api/disease-map-predictions?disease=dengue'),
+          fetch('/api/disease-map-predictions?disease=diarrhoea')
+        ]);
+
+        const dengueResult = await dengueResponse.json();
+        const diarrhoeaResult = await diarrhoeaResponse.json();
+
+        if (dengueResult.success) {
+          setDenguePredictionData(dengueResult.data);
+        }
+
+        if (diarrhoeaResult.success) {
+          setDiarrhoeaPredictionData(diarrhoeaResult.data);
+        }
+      } catch (error) {
+        console.error('Error fetching disease data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []);
 
   const renderDiseaseMap = () => {
+    if (isLoading) {
+      return (
+        <Card className="shadow-md">
+          <CardContent className="flex items-center justify-center h-[550px]">
+            <p className="text-gray-500">Loading map data...</p>
+          </CardContent>
+        </Card>
+      );
+    }
+
     switch (selectedDisease) {
       case 'dengue':
         return (
@@ -49,6 +91,7 @@ export default function DiseaseMapsTab() {
               <DiarrhoeaMap
                 height="550px"
                 showLabelsDefault={true}
+                predictionData={diarrhoeaPredictionData}
               />
             </CardContent>
           </Card>

@@ -39,33 +39,33 @@ export default function WeatherDiseaseTriggers({ data }: WeatherDiseaseTriggersP
   };
 
   return (
-    <Card className="h-full flex flex-col shadow-md">
-      <CardHeader className="pb-3 text-center">
+    <Card className="h-full max-h-[560px] flex flex-col shadow-md w-full max-w-full overflow-hidden">
+      <CardHeader className="pb-3 text-center flex-shrink-0">
         <CardTitle className="font-headline text-lg">Weather Impact</CardTitle>
         <CardDescription className="text-xs mt-1">
           on Disease Outbreaks
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 px-4 py-2">
+      <CardContent className="flex-1 px-4 py-2 overflow-y-auto overflow-x-hidden min-h-0">
         <div className="space-y-3">
           {data.map((trigger) => {
             const Icon = iconMap[trigger.icon];
             return (
-              <div key={trigger.id} className="flex flex-col space-y-2 p-3 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors">
-                <div className="flex items-center gap-2">
+              <div key={trigger.id} className="flex flex-col space-y-2 p-3 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors shadow-md min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
                   <div className={`p-2 rounded-full ${getIconBgColor(trigger.variable)} flex-shrink-0`}>
                     <Icon className={`h-5 w-5 ${getIconColor(trigger.variable)}`} />
                   </div>
-                  <h3 className="font-semibold text-sm">{trigger.variable}</h3>
+                  <h3 className="font-semibold text-sm break-words min-w-0">{trigger.variable}</h3>
                 </div>
-                <div className="flex flex-wrap gap-1 pl-11">
+                <div className="flex flex-wrap gap-1 pl-11 min-w-0">
                   {trigger.diseases.map(disease => (
-                    <Badge key={disease} variant="secondary" className="text-xs px-2 py-0.5">
+                    <Badge key={disease} variant="secondary" className="text-xs px-2 py-0.5 break-words">
                       {disease}
                     </Badge>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground leading-snug pl-11">
+                <p className="text-xs text-muted-foreground leading-snug pl-11 break-words">
                   {trigger.impact}
                 </p>
               </div>

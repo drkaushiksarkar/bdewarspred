@@ -155,11 +155,11 @@ export default function LoginPage() {
                   {isLoading ? 'Signing in...' : 'Sign in'}
                 </Button>
 
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <p className="text-xs text-center text-gray-500">
+                {/* <div className="mt-6 pt-4 border-t border-gray-200"> */}
+                  {/* <p className="text-xs text-center text-gray-500">
                     Demo Credentials: <span className="font-medium">demo / demo123</span>
-                  </p>
-                </div>
+                  </p> */}
+                {/* </div> */}
               </form>
             </CardContent>
           </Card>
