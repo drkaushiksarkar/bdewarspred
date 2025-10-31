@@ -241,7 +241,7 @@ export default function DistrictSatelliteMap({
         source: 'district-labels',
         layout: {
           'text-field': ['get', 'ADM2_EN'],
-          'text-font': ['Open Sans Regular'],
+          'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
           'text-size': 11,
           'text-allow-overlap': false,
           'visibility': showLabelsDefault ? 'visible' : 'none'
@@ -252,6 +252,7 @@ export default function DistrictSatelliteMap({
           'text-halo-width': 1.2
         }
       });
+
 
       // Tooltip
       const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false });

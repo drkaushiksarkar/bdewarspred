@@ -287,7 +287,7 @@ export default function MalariaMap() {
 
                 // Display as integer (already converted in the data)
                 const displayValue = forecast !== undefined && forecast !== null ? forecast : 'No data';
-                const speciesLabel = species === 'pv_rate' ? 'Vivax' : species === 'pf_rate' ? 'Falciparum' : 'Mixed (pf + pv)';
+                const speciesLabel = species === 'pv_rate' ? 'Vivax' : species === 'pf_rate' ? 'Falciparum' : 'Total Malaria';
                 const html = `<div style="font-size:12px; color: #000;"><b>Upazila:</b> ${p.UPA_NAME || ''}<br/><b>${speciesLabel} Forecast:</b> ${displayValue}</div>`;
                 popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
                 map.getCanvas().style.cursor = 'pointer';
@@ -342,7 +342,7 @@ export default function MalariaMap() {
                                 <SelectContent>
                                     <SelectItem value="pv_rate">Vivax</SelectItem>
                                     <SelectItem value="pf_rate">Falciparum</SelectItem>
-                                    <SelectItem value="mixed_rate">Mixed (pf + pv)</SelectItem>
+                                    <SelectItem value="mixed_rate">Total Malaria</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

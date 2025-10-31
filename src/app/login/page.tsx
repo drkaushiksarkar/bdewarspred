@@ -87,10 +87,10 @@ export default function LoginPage() {
 
         {/* Partner Logos */}
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Developed with support from:
-          </p>
           <PartnerLogos />
+          <p className="text-sm text-gray-600">
+            The EWARS system has been developed with funding support from The Global Fund and Technology provided by IMACS.
+          </p>
           <p className="text-xs text-gray-500">
             © 2025 Bangladesh EWARS. All rights reserved.
           </p>
