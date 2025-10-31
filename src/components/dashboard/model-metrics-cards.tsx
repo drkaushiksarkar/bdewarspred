@@ -3,9 +3,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Target, TrendingUp, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Target, TrendingUp, CheckCircle2, Clock, AlertTriangle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
+import InfoButton from './InfoButton';
 
 interface ModelMetrics {
   r2_score?: number;
@@ -94,17 +96,32 @@ export default function ModelMetricsCards({ disease, setDisease }: ModelMetricsC
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Model Performance</h2>
-          <Select value={disease} onValueChange={setDisease}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select disease" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="dengue">Dengue</SelectItem>
-              <SelectItem value="diarrhoea">Diarrhoea</SelectItem>
-              <SelectItem value="malaria" disabled>Malaria</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Select value={disease} onValueChange={setDisease}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select disease" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="dengue">Dengue</SelectItem>
+                <SelectItem value="diarrhoea">Diarrhoea</SelectItem>
+                <SelectItem value="malaria" disabled>Malaria</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="flex items-center gap-1">
+              <Button disabled className="bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh Model
+              </Button>
+              <InfoButton
+                title="Refresh Model"
+                content="This feature will update the model output with the latest predictions and recalculate performance metrics based on recent data. Currently under maintenance."
+              />
+            </div>
+          </div>
         </div>
+        <p className="text-sm text-gray-500">
+          Integration of Model servers on Google Colab and Dashboard is under maintenance.
+        </p>
         <Card className="flex flex-col items-center justify-center p-8">
           <AlertTriangle className="h-8 w-8 text-destructive" />
           <p className="mt-2 text-sm font-medium text-destructive">
@@ -125,17 +142,32 @@ export default function ModelMetricsCards({ disease, setDisease }: ModelMetricsC
             BETA
           </Badge>
         </div>
-        <Select value={disease} onValueChange={setDisease}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select disease" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="dengue">Dengue</SelectItem>
-            <SelectItem value="diarrhoea">Diarrhoea</SelectItem>
-            <SelectItem value="malaria" disabled>Malaria</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Select value={disease} onValueChange={setDisease}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select disease" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="dengue">Dengue</SelectItem>
+              <SelectItem value="diarrhoea">Diarrhoea</SelectItem>
+              <SelectItem value="malaria" disabled>Malaria</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="flex items-center gap-1">
+            <Button disabled className="bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh Model
+            </Button>
+            <InfoButton
+              title="Refresh Model"
+              content="This feature will update the model output with the latest predictions and recalculate performance metrics based on recent data. Currently under maintenance."
+            />
+          </div>
+        </div>
       </div>
+      <p className="text-sm text-gray-500">
+        Integration of Model servers on Google Colab and Dashboard is under maintenance.
+      </p>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metricCards.map((card) => {

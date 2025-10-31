@@ -127,14 +127,49 @@ For questions, contact: bangladesh-ewars@email.com`);
     endemic: 'Median + 2 × IQR (robust statistical measure)',
   };
 
-  const handleSendEmail = () => {
+  const handleSendEmail = async () => {
+    if (!receiverEmail) {
+      alert('Please enter a recipient email address');
+      return;
+    }
+
     setIsSending(true);
-    // Simulate email sending
-    setTimeout(() => {
-      setIsSending(false);
-      setIsDialogOpen(false);
+
+    try {
+      // Extract subject from email body (first line after "Subject: ")
+      const subjectMatch = emailBody.match(/Subject: (.+)/);
+      const subject = subjectMatch ? subjectMatch[1] : 'Disease Alert from EWARS Bangladesh';
+
+      // Remove the subject line from the body
+      const bodyWithoutSubject = emailBody.replace(/Subject: .+\n\n?/, '');
+
+      const response = await fetch('/api/send-alert-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: receiverEmail,
+          subject: subject,
+          body: bodyWithoutSubject,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send email');
+      }
+
       alert('Alert email sent successfully!');
-    }, 1500);
+      setIsDialogOpen(false);
+      setReceiverEmail(''); // Clear the email field
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert(`Failed to send email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   // Calculate district distribution for pie chart
@@ -523,7 +558,7 @@ For questions, contact: bangladesh-ewars@email.com`);
                 <Input
                   id="sender-email"
                   type="email"
-                  value="bangladesh-ewars@email.com"
+                  value="ewars.bangladesh@gmail.com"
                   disabled
                   className="bg-gray-50"
                 />
