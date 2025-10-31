@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
+
+// Use the secondary database connection (same as drilldown routes)
+const pool = new Pool({
+  host: process.env.PG_HOST_2,
+  port: parseInt(process.env.PG_PORT_2 || '5432'),
+  database: process.env.PG_DB_2,
+  user: process.env.PG_USER_2,
+  password: process.env.PG_PASS_2,
+  connectionTimeoutMillis: 10000,
+});
 
 export async function GET(request: Request) {
   try {
@@ -48,7 +58,7 @@ export async function GET(request: Request) {
       params = [];
     }
 
-    const result = await query(queryText, params);
+    const result = await pool.query(queryText, params);
 
     return NextResponse.json({
       success: true,

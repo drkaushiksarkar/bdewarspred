@@ -8,14 +8,6 @@ import {
 } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -23,13 +15,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Biohazard, LogOut, Search, Settings, Loader2, Download } from 'lucide-react';
-import Link from 'next/link';
+import { Biohazard, LogOut, Settings, Loader2, Download } from 'lucide-react';
 import HelpDrawer from './help-drawer';
-import { searchAction } from '@/app/actions';
 import { useSession, signOut } from 'next-auth/react';
 import {
   Tooltip,
@@ -114,35 +102,6 @@ export default function Header({ activeTab, setActiveTab, mainContentRef }: Head
       setIsGeneratingPDF(false);
     }
   };
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [isSearching, setIsSearching] = React.useState(false);
-  const [searchResult, setSearchResult] = React.useState<string | null>(null);
-  const [searchError, setSearchError] = React.useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-
-    setIsSearching(true);
-    setSearchError(null);
-    setSearchResult(null);
-    setIsDialogOpen(true);
-
-    const result = await searchAction(searchQuery);
-
-    if (result.success && result.data) {
-      setSearchResult(result.data.answer);
-    } else {
-      setSearchError(result.error || 'An unknown error occurred.');
-    }
-    setIsSearching(false);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
 
   return (
     <header className="sticky top-0 z-30 bg-white">
@@ -155,21 +114,8 @@ export default function Header({ activeTab, setActiveTab, mainContentRef }: Head
           </span>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative ml-auto flex-1 md:grow-0">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Ask a question about the data..."
-          className="w-full rounded-lg bg-secondary pl-8 md:w-[200px] lg:w-[320px] placeholder:text-gray-400"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={isSearching}
-        />
-      </div>
-
       {/* Download Report Button */}
+      <div className="ml-auto"></div>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -239,34 +185,6 @@ export default function Header({ activeTab, setActiveTab, mainContentRef }: Head
         </DropdownMenuContent>
       </DropdownMenu>
       </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[525px]">
-          <DialogHeader>
-            <DialogTitle>AI Search Results</DialogTitle>
-            <DialogDescription>
-              Answer based on the data available on the dashboard.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="min-h-[120px] py-4">
-            {isSearching ? (
-              <div className="flex items-center justify-center gap-2">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                <span className="text-muted-foreground">Analyzing data...</span>
-              </div>
-            ) : searchError ? (
-              <div className="text-destructive">{searchError}</div>
-            ) : (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <p className="text-foreground">{searchResult}</p>
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </header>
   );
 }
