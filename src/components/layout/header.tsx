@@ -37,14 +37,75 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { captureElement, generatePDFReport, wait, waitForImagesToLoad } from '@/lib/pdf-utils';
+import { ALL_TABS, TAB_LABELS } from '@/app/page';
 
-export default function Header() {
+type Tab = 'overview' | 'model' | 'alert' | 'disease-maps' | 'simulation' | 'drilldown' | 'data-entry';
+
+interface HeaderProps {
+  activeTab: Tab;
+  setActiveTab: (tab: Tab) => void;
+  mainContentRef: React.RefObject<HTMLDivElement>;
+}
+
+export default function Header({ activeTab, setActiveTab, mainContentRef }: HeaderProps) {
   const { data: session } = useSession();
   const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
 
-  const handleDownloadReport = () => {
-    // Download functionality - can be implemented later
-    console.log('Download report');
+  const [isGeneratingPDF, setIsGeneratingPDF] = React.useState(false);
+
+  const handleDownloadReport = async () => {
+    if (!mainContentRef.current) {
+      console.error('Main content ref is not available');
+      return;
+    }
+
+    setIsGeneratingPDF(true);
+
+    try {
+      const screenshots: { canvas: HTMLCanvasElement; tabName: string }[] = [];
+      const originalTab = activeTab;
+
+      // Iterate through all tabs
+      for (const tab of ALL_TABS) {
+        // Switch to the tab
+        setActiveTab(tab);
+
+        // Wait for the tab to render and for content to load (including API calls)
+        await wait(5000); // Wait 5 seconds for APIs to fetch data
+
+        // Wait for images to load
+        if (mainContentRef.current) {
+          await waitForImagesToLoad(mainContentRef.current);
+        }
+
+        // Additional wait for any charts or dynamic content to render
+        await wait(1000);
+
+        // Capture the screenshot of the current tab
+        if (mainContentRef.current) {
+          const canvas = await captureElement(mainContentRef.current);
+          screenshots.push({
+            canvas,
+            tabName: TAB_LABELS[tab],
+          });
+        }
+      }
+
+      // Switch back to the original tab
+      setActiveTab(originalTab);
+
+      // Generate the PDF with all screenshots
+      const fileName = `EWARS_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+      await generatePDFReport(screenshots, fileName);
+
+      console.log('PDF report generated successfully');
+    } catch (error) {
+      console.error('Error generating PDF report:', error);
+      alert('Failed to generate PDF report. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
   const [searchQuery, setSearchQuery] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
@@ -109,13 +170,18 @@ export default function Header() {
               size="icon"
               className="bg-black text-white hover:bg-gray-800"
               onClick={handleDownloadReport}
+              disabled={isGeneratingPDF}
             >
-              <Download className="h-5 w-5" />
+              {isGeneratingPDF ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Download className="h-5 w-5" />
+              )}
               <span className="sr-only">Download Report</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Download Report</p>
+            <p>{isGeneratingPDF ? 'Generating PDF...' : 'Download Report'}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

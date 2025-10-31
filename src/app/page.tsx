@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Header from '@/components/layout/header';
 import NavigationTabs from '@/components/layout/navigation-tabs';
 import OverviewTab from '@/components/dashboard/tabs/overview-tab';
@@ -14,8 +14,21 @@ import PartnerLogos from '@/components/layout/partner-logos';
 
 type Tab = 'overview' | 'model' | 'alert' | 'disease-maps' | 'simulation' | 'drilldown' | 'data-entry';
 
+export const TAB_LABELS: Record<Tab, string> = {
+  'overview': 'Overview',
+  'model': 'Model',
+  'alert': 'Alert',
+  'disease-maps': 'Disease Maps',
+  'simulation': 'Simulation',
+  'drilldown': 'Climate Impact',
+  'data-entry': 'Data Entry',
+};
+
+export const ALL_TABS: Tab[] = ['overview', 'disease-maps', 'alert', 'drilldown', 'simulation', 'model', 'data-entry'];
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const mainContentRef = useRef<HTMLDivElement>(null);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -40,9 +53,13 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <Header />
+      <Header
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        mainContentRef={mainContentRef}
+      />
       <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
-      <main className="flex-1 px-12 sm:px-18 lg:px-36 xl:px-48 2xl:px-72 py-4 sm:py-6 lg:py-8">
+      <main ref={mainContentRef} className="flex-1 px-12 sm:px-18 lg:px-36 xl:px-48 2xl:px-72 py-4 sm:py-6 lg:py-8">
         <div className="mx-auto max-w-[1600px]">
           {renderTabContent()}
         </div>
