@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import maplibregl, { Map, LngLatBoundsLike } from 'maplibre-gl';
 import * as turf from '@turf/turf';
 
@@ -43,6 +43,7 @@ export default function DiarrhoeaMap({
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
+  const [isContainerReady, setIsContainerReady] = useState(false);
 
   // Dynamic color stops based on actual data
   const colorStops: [number, string][] = useMemo(() => {
@@ -106,8 +107,31 @@ export default function DiarrhoeaMap({
     return stops;
   }, [predictionData]);
 
+  // Wait for container to be ready with retry mechanism
   useEffect(() => {
-    if (mapRef.current || !containerRef.current) return;
+    if (!containerRef.current) return;
+
+    const container = containerRef.current;
+    let attempts = 0;
+    const maxAttempts = 20; // Try for up to 2 seconds (20 * 100ms)
+
+    const checkContainer = () => {
+      if (container.offsetWidth > 0 && container.offsetHeight > 0) {
+        setIsContainerReady(true);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(checkContainer, 100);
+      }
+    };
+
+    // Start checking after a short delay
+    const timer = setTimeout(checkContainer, 50);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (mapRef.current || !containerRef.current || !isContainerReady) return;
 
     const map = new maplibregl.Map({
       container: containerRef.current,
@@ -202,10 +226,12 @@ export default function DiarrhoeaMap({
 
     mapRef.current = map;
     return () => {
-        mapRef.current?.remove();
+      if (mapRef.current) {
+        mapRef.current.remove();
         mapRef.current = null;
-    }
-  }, [predictionData, showLabelsDefault]);
+      }
+    };
+  }, [predictionData, showLabelsDefault, isContainerReady, colorStops]);
 
   return (
     <div className="relative w-full">

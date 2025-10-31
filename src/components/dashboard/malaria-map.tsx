@@ -107,10 +107,25 @@ export default function MalariaMap() {
                 const predictionsByName: { [key: string]: any } = {};
 
                 apiData.forEach((row: any) => {
+                    const pvRate = Number(row.pv_rate) || 0;
+                    const pfRate = Number(row.pf_rate) || 0;
+                    const mixedSum = pvRate + pfRate;
+
+                    // Debug logging
+                    if (mixedSum > 0) {
+                        console.log('Malaria data:', {
+                            upazila: row.upazila_id,
+                            pv_rate: pvRate,
+                            pf_rate: pfRate,
+                            mixed_rate: mixedSum,
+                            original_mixed: row.mixed_rate
+                        });
+                    }
+
                     const data = {
-                        pv_rate: Number(row.pv_rate) || 0,
-                        pf_rate: Number(row.pf_rate) || 0,
-                        mixed_rate: Number(row.mixed_rate) || 0
+                        pv_rate: pvRate,
+                        pf_rate: pfRate,
+                        mixed_rate: mixedSum
                     };
 
                     if (row.UpazilaID) {
@@ -142,11 +157,21 @@ export default function MalariaMap() {
                         feature.properties.pv_rate = predictions.pv_rate;
                         feature.properties.pf_rate = predictions.pf_rate;
                         feature.properties.mixed_rate = predictions.mixed_rate;
+
+                        // Debug: Log when we set mixed rate
+                        if (predictions.mixed_rate > 0) {
+                            console.log('Setting feature properties:', {
+                                upazila: upazilaName,
+                                pv_rate: predictions.pv_rate,
+                                pf_rate: predictions.pf_rate,
+                                mixed_rate: predictions.mixed_rate
+                            });
+                        }
                     } else {
                         // Set default values if no prediction data
                         feature.properties.pv_rate = 0;
                         feature.properties.pf_rate = 0;
-                        feature.properties.mixed_rate = 0;
+                        feature.properties.mixed_rate = 0 + 0; // Sum of pv_rate and pf_rate
                     }
                 });
                 setGeojsonData(geojson);
@@ -247,9 +272,21 @@ export default function MalariaMap() {
                 if (!f) return;
                 const p = f.properties || {};
                 const forecast = p[species];
+
+                // Debug logging for mixed rate
+                if (species === 'mixed_rate') {
+                    console.log('Tooltip data:', {
+                        upazila: p.UPA_NAME,
+                        pv_rate: p.pv_rate,
+                        pf_rate: p.pf_rate,
+                        mixed_rate: p.mixed_rate,
+                        forecast: forecast
+                    });
+                }
+
                 // Display as integer (already converted in the data)
                 const displayValue = forecast !== undefined && forecast !== null ? forecast : 'No data';
-                const speciesLabel = species === 'pv_rate' ? 'Vivax' : species === 'pf_rate' ? 'Falciparum' : 'Mixed';
+                const speciesLabel = species === 'pv_rate' ? 'Vivax' : species === 'pf_rate' ? 'Falciparum' : 'Mixed (pf + pv)';
                 const html = `<div style="font-size:12px; color: #000;"><b>Upazila:</b> ${p.UPA_NAME || ''}<br/><b>${speciesLabel} Forecast:</b> ${displayValue}</div>`;
                 popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
                 map.getCanvas().style.cursor = 'pointer';
@@ -294,7 +331,7 @@ export default function MalariaMap() {
             <CardContent>
                 <div className="relative w-full">
                     <div className="absolute top-2 left-2 z-10 flex flex-col gap-2">
-                        <MapLegend title="Next Week Forecast (Cases)" stops={colorStops} />
+                        <MapLegend title="Total Predicted Cases" stops={colorStops} />
                         <div className="bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-md max-w-xs space-y-2">
                             <Label htmlFor="species-select">Species</Label>
                             <Select value={species} onValueChange={(value) => setSpecies(value as MalariaSpecies)}>
@@ -304,7 +341,7 @@ export default function MalariaMap() {
                                 <SelectContent>
                                     <SelectItem value="pv_rate">Vivax</SelectItem>
                                     <SelectItem value="pf_rate">Falciparum</SelectItem>
-                                    <SelectItem value="mixed_rate">Mixed Rate</SelectItem>
+                                    <SelectItem value="mixed_rate">Mixed (pf + pv)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

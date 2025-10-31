@@ -44,7 +44,7 @@ export default function DistrictSatelliteMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const legendContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
-  const [basemap, setBasemap] = useState<'esri' | 'osm'>('esri');
+  const [basemap, setBasemap] = useState<'esri' | 'osm'>('osm');
   const [showLabels, setShowLabels] = useState<boolean>(showLabelsDefault);
   const [isContainerReady, setIsContainerReady] = useState(false);
 
@@ -120,18 +120,25 @@ export default function DistrictSatelliteMap({
     return colorStops[0][1];
   }, [colorStops]);
 
-  // Wait for container to be ready
+  // Wait for container to be ready with retry mechanism
   useEffect(() => {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
+    let attempts = 0;
+    const maxAttempts = 20; // Try for up to 2 seconds (20 * 100ms)
 
-    // Use setTimeout to ensure the container has been painted
-    const timer = setTimeout(() => {
+    const checkContainer = () => {
       if (container.offsetWidth > 0 && container.offsetHeight > 0) {
         setIsContainerReady(true);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(checkContainer, 100);
       }
-    }, 100);
+    };
+
+    // Start checking after a short delay
+    const timer = setTimeout(checkContainer, 50);
 
     return () => clearTimeout(timer);
   }, []);
@@ -233,7 +240,7 @@ export default function DistrictSatelliteMap({
         source: 'district-labels',
         layout: {
           'text-field': ['get', 'ADM2_EN'],
-          'text-font': ['Noto Sans Regular'],
+          'text-font': ['Open Sans Regular'],
           'text-size': 11,
           'text-allow-overlap': false,
           'visibility': showLabelsDefault ? 'visible' : 'none'
@@ -273,7 +280,12 @@ export default function DistrictSatelliteMap({
     });
 
     mapRef.current = map;
-    return () => mapRef.current?.remove();
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
   }, [predictionData, showLabelsDefault, isContainerReady]);
 
   // Toggle basemap
