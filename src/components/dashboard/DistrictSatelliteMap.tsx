@@ -146,13 +146,15 @@ export default function DistrictSatelliteMap({
   useEffect(() => {
     if (!containerRef.current || mapRef.current || !isContainerReady) return;
 
+    const glyphUrl = 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf';
+
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: {
         version: 8,
         sources: {},
         layers: [],
-        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+        glyphs: glyphUrl,
       },
       center: [90.4, 23.7],
       zoom: 5.5,
@@ -168,6 +170,12 @@ export default function DistrictSatelliteMap({
     }
 
     map.on('load', async () => {
+      // Ensure glyphs are defined before adding any text layers (MapLibre validation requirement)
+      const styleRef = (map as any)?.style?.stylesheet;
+      if (styleRef && !styleRef.glyphs) {
+        styleRef.glyphs = glyphUrl;
+      }
+
       // Basemaps
       map.addSource('esri-world', {
         type: 'raster',
