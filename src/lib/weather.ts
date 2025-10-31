@@ -37,10 +37,16 @@ export async function getLiveWeatherData(city: string, countryCode: string): Pro
     // The 'rain' object might not exist if there's no rain.
     const rainfall = data.rain && data.rain['1h'] ? data.rain['1h'] : 0;
 
+    // Get weather description
+    const weatherDescription = data.weather && data.weather[0] ? data.weather[0].description : '';
+
     return {
       temp: data.main.temp,
+      temp_min: data.main.temp_min,
+      temp_max: data.main.temp_max,
       humidity: data.main.humidity,
       rainfall: rainfall,
+      weather_description: weatherDescription,
     };
   } catch (error) {
     console.error('An unexpected error occurred while fetching weather data:', error);

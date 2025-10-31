@@ -73,7 +73,7 @@ export function DateRangeFilter({ className }: React.HTMLAttributes<HTMLDivEleme
   };
 
   return (
-    <div className={cn('grid gap-2', className)}>
+    <div className={cn('space-y-2', className)}>
       <Label>Date Range</Label>
       <Popover>
         <PopoverTrigger asChild>
@@ -81,23 +81,24 @@ export function DateRangeFilter({ className }: React.HTMLAttributes<HTMLDivEleme
             id="date"
             variant={'outline'}
             className={cn(
-              'justify-start text-left font-normal',
+              'w-full justify-start text-left font-normal',
               !date && 'text-muted-foreground'
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, 'LLL dd, y')} -{' '}
-                  {format(date.to, 'LLL dd, y')}
-                </>
+            <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+            <span className="truncate">
+              {date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, 'MMM dd')} - {format(date.to, 'MMM dd, yyyy')}
+                  </>
+                ) : (
+                  format(date.from, 'MMM dd, yyyy')
+                )
               ) : (
-                format(date.from, 'LLL dd, y')
-              )
-            ) : (
-              <span>Pick a date</span>
-            )}
+                <span>Pick a date</span>
+              )}
+            </span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
