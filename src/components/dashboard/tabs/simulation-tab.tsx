@@ -16,6 +16,7 @@ import { Slider } from '@/components/ui/slider';
 import { Play, Pause, RotateCcw, Syringe, Droplets, ShieldCheck, FlaskConical, Users } from 'lucide-react';
 import DiseaseSpreadMap from '../DiseaseSpreadMap';
 import { locations } from '@/lib/data';
+import InfoButton from '../InfoButton';
 
 export default function SimulationTab() {
   const [originDistrict, setOriginDistrict] = useState('Dhaka');
@@ -63,15 +64,32 @@ export default function SimulationTab() {
       {/* Control Panel */}
       <Card className="shadow-md border-2 border-gray-200">
         <CardHeader>
-          <CardTitle className="font-headline text-xl flex items-center gap-2">
-            Simulation Controls
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
-              BETA
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            Configure outbreak parameters and test intervention strategies
-          </CardDescription>
+          <div className="flex items-start justify-between">
+            <div className="space-y-1.5">
+              <CardTitle className="font-headline text-xl flex items-center gap-2">
+                Simulation Controls
+                <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                  BETA
+                </Badge>
+              </CardTitle>
+              <CardDescription>
+                Configure outbreak parameters and test intervention strategies
+              </CardDescription>
+            </div>
+            <InfoButton
+              title="Simulation Controls"
+              content={
+                <>
+                  <p className="mb-3">
+                    Model disease spread from an origin district and test intervention strategies.
+                  </p>
+                  <p>
+                    Adjust parameters like initial cases and R₀, then activate interventions to see their impact on outbreak control.
+                  </p>
+                </>
+              }
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

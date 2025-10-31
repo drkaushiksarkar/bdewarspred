@@ -11,6 +11,7 @@ import {
 import DistrictSatelliteMap from '../DistrictSatelliteMap';
 import MalariaMap from '../malaria-map';
 import DiarrhoeaMap from '../DiarrhoeaMap';
+import InfoButton from '../InfoButton';
 import React from 'react';
 
 export default function DiseaseMapsTab() {
@@ -65,9 +66,24 @@ export default function DiseaseMapsTab() {
       case 'dengue':
         return (
           <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="font-headline">Dengue Predicted Cases Heatmap</CardTitle>
-              <CardDescription>Total predicted dengue cases by district.</CardDescription>
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+              <div className="space-y-1.5">
+                <CardTitle className="font-headline">Dengue Predicted Cases Heatmap</CardTitle>
+                <CardDescription>Total predicted dengue cases by district.</CardDescription>
+              </div>
+              <InfoButton
+                title="Predicted Cases Heatmap"
+                content={
+                  <>
+                    <p className="mb-3">
+                      Shows AI-predicted disease cases across all districts.
+                    </p>
+                    <p>
+                      Darker colors indicate higher predicted case counts. Use this to identify high-risk areas.
+                    </p>
+                  </>
+                }
+              />
             </CardHeader>
             <CardContent>
               <DistrictSatelliteMap
@@ -83,9 +99,24 @@ export default function DiseaseMapsTab() {
       case 'diarrhoea':
         return (
           <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="font-headline">Diarrhoea Predicted Cases Heatmap</CardTitle>
-              <CardDescription>Total predicted Acute Watery Diarrhoea cases by district.</CardDescription>
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+              <div className="space-y-1.5">
+                <CardTitle className="font-headline">Diarrhoea Predicted Cases Heatmap</CardTitle>
+                <CardDescription>Total predicted Acute Watery Diarrhoea cases by district.</CardDescription>
+              </div>
+              <InfoButton
+                title="Predicted Cases Heatmap"
+                content={
+                  <>
+                    <p className="mb-3">
+                      Shows AI-predicted disease cases across all districts.
+                    </p>
+                    <p>
+                      Darker colors indicate higher predicted case counts. Use this to identify high-risk areas.
+                    </p>
+                  </>
+                }
+              />
             </CardHeader>
             <CardContent>
               <DiarrhoeaMap

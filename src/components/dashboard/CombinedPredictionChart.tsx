@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import type { TimeSeriesDataPoint } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+import InfoButton from './InfoButton';
 
 interface CombinedPredictionChartProps {
   data: TimeSeriesDataPoint[];
@@ -22,9 +23,24 @@ export default function CombinedPredictionChart({ data }: CombinedPredictionChar
   if (data.length === 0) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Predicted Cases & Uncertainty</CardTitle>
-          <CardDescription>Predicted case counts with uncertainty interval</CardDescription>
+        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+          <div className="space-y-1.5">
+            <CardTitle className="font-headline">Predicted Cases & Uncertainty</CardTitle>
+            <CardDescription>Predicted case counts with uncertainty interval</CardDescription>
+          </div>
+          <InfoButton
+            title="Predicted Cases & Uncertainty"
+            content={
+              <>
+                <p className="mb-3">
+                  Shows AI-predicted disease cases over time with confidence intervals.
+                </p>
+                <p>
+                  The shaded area represents prediction uncertainty—wider bands indicate less certainty.
+                </p>
+              </>
+            }
+          />
         </CardHeader>
         <CardContent className="flex h-[400px] items-center justify-center">
           <p className="text-muted-foreground">No prediction data available for the selected district.</p>
@@ -48,9 +64,24 @@ export default function CombinedPredictionChart({ data }: CombinedPredictionChar
 
   return (
     <Card className="shadow-md">
-      <CardHeader>
-        <CardTitle className="font-headline">Predicted Cases & Uncertainty</CardTitle>
-        <CardDescription>Predicted case trend with uncertainty interval overlay</CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+        <div className="space-y-1.5">
+          <CardTitle className="font-headline">Predicted Cases & Uncertainty</CardTitle>
+          <CardDescription>Predicted case trend with uncertainty interval overlay</CardDescription>
+        </div>
+        <InfoButton
+          title="Predicted Cases & Uncertainty"
+          content={
+            <>
+              <p className="mb-3">
+                Shows AI-predicted disease cases over time with confidence intervals.
+              </p>
+              <p>
+                The shaded area represents prediction uncertainty—wider bands indicate less certainty.
+              </p>
+            </>
+          }
+        />
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>

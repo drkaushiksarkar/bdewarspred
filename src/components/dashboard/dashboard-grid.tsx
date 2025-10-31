@@ -25,6 +25,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import MalariaMap from './malaria-map';
 import DiarrhoeaMap from './DiarrhoeaMap';
 import WeatherDiseaseTriggers from './WeatherDiseaseTriggers';
+import InfoButton from './InfoButton';
 
 
 async function fetchAndFormatWeatherData(): Promise<{data: WeatherData[], error: boolean}> {
@@ -129,9 +130,24 @@ export default function DashboardGrid() {
       {/* Row 4+: Disease Heatmaps */}
       <div className="grid gap-4 sm:grid-cols-1">
         <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">Dengue Predicted Cases Heatmap</CardTitle>
-            <CardDescription>Total predicted dengue cases by district.</CardDescription>
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+            <div className="space-y-1.5">
+              <CardTitle className="font-headline">Dengue Predicted Cases Heatmap</CardTitle>
+              <CardDescription>Total predicted dengue cases by district.</CardDescription>
+            </div>
+            <InfoButton
+              title="Predicted Cases Heatmap"
+              content={
+                <>
+                  <p className="mb-3">
+                    Shows AI-predicted disease cases across all districts.
+                  </p>
+                  <p>
+                    Darker colors indicate higher predicted case counts. Use this to identify high-risk areas.
+                  </p>
+                </>
+              }
+            />
           </CardHeader>
           <CardContent>
             <DistrictSatelliteMap
@@ -143,9 +159,24 @@ export default function DashboardGrid() {
         </Card>
         <MalariaMap />
         <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">Diarrhoea Predicted Cases Heatmap</CardTitle>
-            <CardDescription>Total predicted Acute Watery Diarrhoea cases by district.</CardDescription>
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+            <div className="space-y-1.5">
+              <CardTitle className="font-headline">Diarrhoea Predicted Cases Heatmap</CardTitle>
+              <CardDescription>Total predicted Acute Watery Diarrhoea cases by district.</CardDescription>
+            </div>
+            <InfoButton
+              title="Predicted Cases Heatmap"
+              content={
+                <>
+                  <p className="mb-3">
+                    Shows AI-predicted disease cases across all districts.
+                  </p>
+                  <p>
+                    Darker colors indicate higher predicted case counts. Use this to identify high-risk areas.
+                  </p>
+                </>
+              }
+            />
           </CardHeader>
           <CardContent>
             <DiarrhoeaMap

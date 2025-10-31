@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { WeeklyNationalData } from '@/lib/types';
+import InfoButton from './InfoButton';
 
 interface NationalCasesBaselineChartProps {
   data: WeeklyNationalData[];
@@ -34,8 +35,21 @@ export default function NationalCasesBaselineChart({ data, year }: NationalCases
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <CardTitle className="text-xl font-semibold">National weekly cases vs baseline ({yearRange})</CardTitle>
+        <InfoButton
+          title="National Cases vs Baseline"
+          content={
+            <>
+              <p className="mb-3">
+                Compares actual weekly cases to the historical baseline threshold.
+              </p>
+              <p>
+                When the blue line exceeds the dashed baseline, it signals an outbreak requiring immediate attention.
+              </p>
+            </>
+          }
+        />
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>

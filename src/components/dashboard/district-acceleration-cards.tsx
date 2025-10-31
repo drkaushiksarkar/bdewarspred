@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { TrendingUp, TrendingDown, Minus, MapPin, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
+import InfoButton from './InfoButton';
 
 interface DistrictAccelerationCardsProps {
   data: AccelerationAlertData[];
@@ -15,9 +16,24 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
   if (!data || data.length === 0) {
     return (
       <Card className="shadow-md">
-        <CardHeader>
-          <CardTitle className="font-headline">Top Districts - Last Week Cases</CardTitle>
-          <CardDescription>Districts with highest case counts from previous week</CardDescription>
+        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+          <div className="space-y-1.5">
+            <CardTitle className="font-headline">Top Districts - Last Week Cases</CardTitle>
+            <CardDescription>Districts with highest case counts from previous week</CardDescription>
+          </div>
+          <InfoButton
+            title="Top Districts"
+            content={
+              <>
+                <p className="mb-3">
+                  Highlights districts with the most cases last week.
+                </p>
+                <p>
+                  Color indicators show rising, declining, or stable trends compared to the week before.
+                </p>
+              </>
+            }
+          />
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8 text-gray-500">
@@ -57,9 +73,24 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
 
   return (
     <Card className="shadow-md">
-      <CardHeader>
-        <CardTitle className="font-headline">Top Districts - Last Week Cases</CardTitle>
-        <CardDescription>Districts with highest case counts from previous week</CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+        <div className="space-y-1.5">
+          <CardTitle className="font-headline">Top Districts - Last Week Cases</CardTitle>
+          <CardDescription>Districts with highest case counts from previous week</CardDescription>
+        </div>
+        <InfoButton
+          title="Top Districts"
+          content={
+            <>
+              <p className="mb-3">
+                Highlights districts with the most cases last week.
+              </p>
+              <p>
+                Color indicators show rising, declining, or stable trends compared to the week before.
+              </p>
+            </>
+          }
+        />
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

@@ -24,6 +24,7 @@ import NationalCasesBaselineChart from '@/components/dashboard/NationalCasesBase
 import { getAlertStats, getWeeklyNationalDataFromAPI, getDistrictAlertData, diseases } from '@/lib/data';
 import { BaselineMethod, WeeklyNationalData } from '@/lib/types';
 import { Info, Loader2, Mail, Send } from 'lucide-react';
+import InfoButton from '@/components/dashboard/InfoButton';
 import {
   PieChart,
   Pie,
@@ -457,9 +458,24 @@ For questions, contact: bangladesh-ewars@email.com`);
 
         {/* Cases by District Pie Chart - 40% */}
         <Card className="shadow-md">
-          <CardHeader>
-            <CardTitle className="font-headline">Cases by District</CardTitle>
-            <CardDescription>Top 10 districts by case count</CardDescription>
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+            <div className="space-y-1.5">
+              <CardTitle className="font-headline">Cases by District</CardTitle>
+              <CardDescription>Top 10 districts by case count</CardDescription>
+            </div>
+            <InfoButton
+              title="Cases by District"
+              content={
+                <>
+                  <p className="mb-3">
+                    Shows the top 10 districts with the highest case counts.
+                  </p>
+                  <p>
+                    Each slice represents a district's share of total cases, helping identify hotspots.
+                  </p>
+                </>
+              }
+            />
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={350}>
