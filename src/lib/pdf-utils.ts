@@ -21,6 +21,18 @@ export async function captureElement(
     logging: options?.logging ?? false,
     useCORS: options?.useCORS ?? true,
     allowTaint: options?.allowTaint ?? true,
+    // Important for capturing WebGL canvases (maps)
+    backgroundColor: '#ffffff',
+    removeContainer: false,
+    foreignObjectRendering: false,
+    // Ensure canvas elements (like maps) are captured
+    onclone: (clonedDoc) => {
+      // Force all canvas elements to be visible
+      const canvases = clonedDoc.querySelectorAll('canvas');
+      canvases.forEach((canvas) => {
+        canvas.style.display = 'block';
+      });
+    },
   });
 }
 

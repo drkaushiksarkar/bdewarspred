@@ -157,6 +157,7 @@ export default function DistrictSatelliteMap({
       center: [90.4, 23.7],
       zoom: 5.5,
       attributionControl: false,
+      preserveDrawingBuffer: true, // Enable screenshot capture
     });
 
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');

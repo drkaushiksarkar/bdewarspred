@@ -92,6 +92,7 @@ export default function DiseaseSpreadMap({
       },
       center: [90.4, 23.8],
       zoom: 6.5,
+      preserveDrawingBuffer: true, // Enable screenshot capture
     });
 
     map.current.on('load', () => {

@@ -66,8 +66,11 @@ export default function Header({ activeTab, setActiveTab, mainContentRef }: Head
       const screenshots: { canvas: HTMLCanvasElement; tabName: string }[] = [];
       const originalTab = activeTab;
 
+      // Filter out data-entry tab
+      const tabsToCapture = ALL_TABS.filter(tab => tab !== 'data-entry');
+
       // Iterate through all tabs
-      for (const tab of ALL_TABS) {
+      for (const tab of tabsToCapture) {
         // Switch to the tab
         setActiveTab(tab);
 
@@ -79,8 +82,12 @@ export default function Header({ activeTab, setActiveTab, mainContentRef }: Head
           await waitForImagesToLoad(mainContentRef.current);
         }
 
-        // Additional wait for any charts or dynamic content to render
-        await wait(1000);
+        // Additional wait for maps to fully render (especially for disease-maps and simulation tabs)
+        if (tab === 'disease-maps' || tab === 'simulation') {
+          await wait(3000); // Extra time for map rendering
+        } else {
+          await wait(1000);
+        }
 
         // Capture the screenshot of the current tab
         if (mainContentRef.current) {

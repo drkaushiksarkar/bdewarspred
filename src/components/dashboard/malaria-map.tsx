@@ -221,6 +221,7 @@ export default function MalariaMap() {
             center: [91.8, 22.3],
             zoom: 7,
             attributionControl: false,
+            preserveDrawingBuffer: true, // Enable screenshot capture
         });
 
         mapRef.current = map;
