@@ -178,6 +178,8 @@ export async function getAvailableDistrictsFromDB(disease: string): Promise<stri
 
 /**
  * Get malaria predictions from database
+ * Uses malaria_pv_acceleration_alerts and malaria_pf_acceleration_alerts tables
+ * mixed_rate is calculated as the sum of pv and pf next_week_forecast values
  */
 export async function getMalariaPredictionsFromDB(): Promise<
   Array<{
@@ -188,18 +190,42 @@ export async function getMalariaPredictionsFromDB(): Promise<
   }>
 > {
   try {
+    // Get latest week data from both tables
     const result = await query<{
-      upazila_id: string;
-      pv_rate: number;
-      pf_rate: number;
-      mixed_rate: number;
+      upazila: string;
+      pv_forecast: number | null;
+      pf_forecast: number | null;
     }>(
-      `SELECT upazila_id, pv_rate, pf_rate, mixed_rate
-       FROM ${table('malaria_predictions')}
-       ORDER BY upazila_id`
+      `WITH latest_pv AS (
+         SELECT upazila, this_week_predicted as pv_forecast
+         FROM ${table('malaria_pv_acceleration_alerts')}
+         WHERE year = (SELECT MAX(year) FROM ${table('malaria_pv_acceleration_alerts')})
+           AND month = (SELECT MAX(month) FROM ${table('malaria_pv_acceleration_alerts')}
+                           WHERE year = (SELECT MAX(year) FROM ${table('malaria_pv_acceleration_alerts')}))
+       ),
+       latest_pf AS (
+         SELECT upazila, this_week_predicted as pf_forecast
+         FROM ${table('malaria_pf_acceleration_alerts')}
+         WHERE year = (SELECT MAX(year) FROM ${table('malaria_pf_acceleration_alerts')})
+           AND month = (SELECT MAX(month) FROM ${table('malaria_pf_acceleration_alerts')}
+                           WHERE year = (SELECT MAX(year) FROM ${table('malaria_pf_acceleration_alerts')}))
+       )
+       SELECT
+         COALESCE(pv.upazila, pf.upazila) as upazila,
+         COALESCE(pv.pv_forecast, 0) as pv_forecast,
+         COALESCE(pf.pf_forecast, 0) as pf_forecast
+       FROM latest_pv pv
+       FULL OUTER JOIN latest_pf pf ON pv.upazila = pf.upazila
+       ORDER BY upazila`
     );
 
-    return result.rows;
+    // Calculate mixed_rate as sum of pv and pf forecasts
+    return result.rows.map(row => ({
+      upazila_id: row.upazila,
+      pv_rate: Math.round(row.pv_forecast || 0),
+      pf_rate: Math.round(row.pf_forecast || 0),
+      mixed_rate: Math.round((row.pv_forecast || 0) + (row.pf_forecast || 0)),
+    }));
   } catch (error) {
     console.error('Error fetching malaria predictions:', error);
     return [];

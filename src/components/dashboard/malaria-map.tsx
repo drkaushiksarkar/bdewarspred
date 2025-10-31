@@ -1,28 +1,46 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import maplibregl, { Map, LngLatBoundsLike } from 'maplibre-gl';
 import * as turf from '@turf/turf';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Label } from '../ui/label';
-import Papa from 'papaparse';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
-const MapLegend = ({ title, stops }: { title: string, stops: [number, string][] }) => (
-    <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow-md max-w-xs">
-        <h3 className="font-semibold text-sm mb-2">{title}</h3>
-        <div className="flex flex-col gap-1">
-            {stops.map(([value, color], i) => (
-                <div key={i} className="flex items-center gap-2">
-                    <span style={{ backgroundColor: color }} className="w-4 h-4 rounded-sm border border-black/20" />
-                    <span className="text-xs">
-                        {i === 0 ? `< ${stops[i + 1][0]}` : i === stops.length - 1 ? `> ${value}` : `${value} - ${stops[i + 1]?.[0] ?? ''}`}
-                    </span>
-                </div>
-            ))}
+const MapLegend = ({ title, stops }: { title: string, stops: [number, string][] }) => {
+    if (!stops || stops.length === 0) {
+        return null;
+    }
+
+    return (
+        <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow-md max-w-xs">
+            <h3 className="font-semibold text-sm mb-2">{title}</h3>
+            <div className="flex flex-col gap-1">
+                {stops.map(([value, color], i) => {
+                    const nextValue = stops[i + 1]?.[0];
+                    let label = '';
+
+                    if (i === 0 && nextValue !== undefined) {
+                        label = `< ${nextValue}`;
+                    } else if (i === stops.length - 1) {
+                        label = `≥ ${value}`;
+                    } else if (nextValue !== undefined) {
+                        label = `${value} - ${nextValue}`;
+                    } else {
+                        label = `${value}`;
+                    }
+
+                    return (
+                        <div key={i} className="flex items-center gap-2">
+                            <span style={{ backgroundColor: color }} className="w-4 h-4 rounded-sm border border-black/20" />
+                            <span className="text-xs">{label}</span>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 type MalariaSpecies = 'pv_rate' | 'pf_rate' | 'mixed_rate';
 
@@ -33,59 +51,105 @@ export default function MalariaMap() {
     const [species, setSpecies] = useState<MalariaSpecies>('pv_rate');
     const [isContainerReady, setIsContainerReady] = useState(false);
 
-    const colorStops: [number, string][] = [
-        [-1e-5, '#2c7bb6'],
-        [-1e-6, '#abd9e9'],
-        [0, '#ffffbf'],
-        [1e-6, '#fee090'],
-        [1e-5, '#fdae61'],
-        [1e-4, '#f46d43'],
-        [5e-4, '#d73027']
-    ];
+    // Dynamic color stops based on actual data values (similar to dengue map)
+    const colorStops: [number, string][] = useMemo(() => {
+        if (!geojsonData || !geojsonData.features) return [[0, '#ffffcc']];
+
+        const values = geojsonData.features
+            .map((f: any) => f.properties?.[species])
+            .filter((v: number) => v !== undefined && v !== null && !isNaN(v) && v > 0);
+
+        if (values.length === 0) return [[0, '#ffffcc']];
+
+        const maxVal = Math.max(...values);
+        const minVal = Math.min(...values);
+
+        // If all values are the same, return a simple scale
+        if (maxVal === minVal) {
+            return [
+                [0, '#ffffcc'],
+                [maxVal, '#e31a1c']
+            ];
+        }
+
+        // Yellow to dark red color scale for forecast values
+        const colors = ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026'];
+
+        const stops: [number, string][] = [];
+        for (let i = 0; i < colors.length; i++) {
+            const t = i / (colors.length - 1);
+            // Use exponential distribution for better visual separation
+            const value = minVal + (maxVal - minVal) * Math.pow(t, 1.5);
+            stops.push([Math.round(value), colors[i]]);
+        }
+
+        return stops;
+    }, [geojsonData, species]);
 
     useEffect(() => {
         async function loadData() {
             try {
-                const [geojsonRes, csvRes] = await Promise.all([
+                const [geojsonRes, apiRes] = await Promise.all([
                     fetch('/geo/malaria.geojson'),
-                    fetch('/geo/malaria_predictions.csv')
+                    fetch('/api/data/malaria')
                 ]);
 
-                if (!geojsonRes.ok || !csvRes.ok) {
+                if (!geojsonRes.ok || !apiRes.ok) {
                     console.error("Failed to fetch map data");
                     return;
                 }
 
                 const geojson = await geojsonRes.json();
-                const csvText = await csvRes.text();
+                const apiData = await apiRes.json();
 
-                Papa.parse(csvText, {
-                    header: true,
-                    dynamicTyping: true,
-                    complete: (results) => {
-                        const predictionsByUpazila: { [key: string]: any } = {};
-                        (results.data as any[]).forEach((row: any) => {
-                            if (row.UpazilaID) {
-                                predictionsByUpazila[row.UpazilaID] = {
-                                    pv_rate: row.pv_rate,
-                                    pf_rate: row.pf_rate,
-                                    mixed_rate: row.mixed_rate
-                                };
-                            }
-                        });
+                // Create lookup map - try both UpazilaID and upazila name
+                const predictionsByUpazila: { [key: string]: any } = {};
+                const predictionsByName: { [key: string]: any } = {};
 
-                        geojson.features.forEach((feature: any) => {
-                            const upazilaId = feature.properties.UpazilaID;
-                            const predictions = predictionsByUpazila[upazilaId];
-                            if (predictions) {
-                                feature.properties.pv_rate = predictions.pv_rate ?? 0;
-                                feature.properties.pf_rate = predictions.pf_rate ?? 0;
-                                feature.properties.mixed_rate = predictions.mixed_rate ?? 0;
-                            }
-                        });
-                        setGeojsonData(geojson);
+                apiData.forEach((row: any) => {
+                    const data = {
+                        pv_rate: Number(row.pv_rate) || 0,
+                        pf_rate: Number(row.pf_rate) || 0,
+                        mixed_rate: Number(row.mixed_rate) || 0
+                    };
+
+                    if (row.UpazilaID) {
+                        predictionsByUpazila[row.UpazilaID] = data;
+                    }
+                    if (row.upazila_id) {
+                        predictionsByUpazila[row.upazila_id] = data;
+                    }
+                    if (row.upazila) {
+                        // Normalize name for matching (lowercase, trim)
+                        const normalized = row.upazila.toLowerCase().trim();
+                        predictionsByName[normalized] = data;
                     }
                 });
+
+                // Join predictions with geojson features
+                geojson.features.forEach((feature: any) => {
+                    const upazilaId = feature.properties.UpazilaID;
+                    const upazilaName = feature.properties.UPA_NAME;
+
+                    // Try matching by ID first, then by name
+                    let predictions = predictionsByUpazila[upazilaId];
+                    if (!predictions && upazilaName) {
+                        const normalized = upazilaName.toLowerCase().trim();
+                        predictions = predictionsByName[normalized];
+                    }
+
+                    if (predictions) {
+                        feature.properties.pv_rate = predictions.pv_rate;
+                        feature.properties.pf_rate = predictions.pf_rate;
+                        feature.properties.mixed_rate = predictions.mixed_rate;
+                    } else {
+                        // Set default values if no prediction data
+                        feature.properties.pv_rate = 0;
+                        feature.properties.pf_rate = 0;
+                        feature.properties.mixed_rate = 0;
+                    }
+                });
+                setGeojsonData(geojson);
             } catch (error) {
                 console.error("Error loading map data:", error);
             }
@@ -182,8 +246,11 @@ export default function MalariaMap() {
                 const f = e.features && e.features[0];
                 if (!f) return;
                 const p = f.properties || {};
-                const rate = p[species];
-                const html = `<div style="font-size:12px; color: #000;"><b>Upazila:</b> ${p.UpazilaNameEng || ''}<br/><b>Risk Rate:</b> ${rate !== undefined ? rate.toExponential(2) : 'No data'}</div>`;
+                const forecast = p[species];
+                // Display as integer (already converted in the data)
+                const displayValue = forecast !== undefined && forecast !== null ? forecast : 'No data';
+                const speciesLabel = species === 'pv_rate' ? 'Vivax' : species === 'pf_rate' ? 'Falciparum' : 'Mixed';
+                const html = `<div style="font-size:12px; color: #000;"><b>Upazila:</b> ${p.UPA_NAME || ''}<br/><b>${speciesLabel} Forecast:</b> ${displayValue}</div>`;
                 popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
                 map.getCanvas().style.cursor = 'pointer';
             });
@@ -219,15 +286,15 @@ export default function MalariaMap() {
     return (
         <Card className="shadow-md">
             <CardHeader>
-                <CardTitle className="font-headline">Malaria Geospatial Risk Map</CardTitle>
+                <CardTitle className="font-headline">Malaria Geospatial Forecast Map</CardTitle>
                 <CardDescription>
-                    Simulated malaria risk by upazila based on species.
+                    Next week malaria forecast by upazila based on species (Vivax, Falciparum, or Mixed).
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="relative w-full">
                     <div className="absolute top-2 left-2 z-10 flex flex-col gap-2">
-                        <MapLegend title="Malaria Risk Rate" stops={colorStops} />
+                        <MapLegend title="Next Week Forecast (Cases)" stops={colorStops} />
                         <div className="bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-md max-w-xs space-y-2">
                             <Label htmlFor="species-select">Species</Label>
                             <Select value={species} onValueChange={(value) => setSpecies(value as MalariaSpecies)}>
@@ -235,9 +302,9 @@ export default function MalariaMap() {
                                     <SelectValue placeholder="Select Species" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="pv_rate">Vivax (pv_rate)</SelectItem>
-                                    <SelectItem value="pf_rate">Falciparum (pf_rate)</SelectItem>
-                                    <SelectItem value="mixed_rate">Mixed (mixed_rate)</SelectItem>
+                                    <SelectItem value="pv_rate">Vivax</SelectItem>
+                                    <SelectItem value="pf_rate">Falciparum</SelectItem>
+                                    <SelectItem value="mixed_rate">Mixed Rate</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

@@ -7,10 +7,11 @@ export async function GET() {
   try {
     const data = await getMalariaPredictionsFromDB();
 
-    // Transform to the format expected by the frontend (similar to CSV format)
-    // Convert decimal strings to numbers for proper color mapping
+    // Transform to the format expected by the frontend
+    // Include both upazila_id and upazila name for flexible matching
     const csvFormat = data.map(row => ({
-      UpazilaID: row.upazila_id,
+      upazila_id: row.upazila_id,
+      upazila: row.upazila_id, // Keep upazila field for name matching
       pv_rate: Number(row.pv_rate),
       pf_rate: Number(row.pf_rate),
       mixed_rate: Number(row.mixed_rate),
