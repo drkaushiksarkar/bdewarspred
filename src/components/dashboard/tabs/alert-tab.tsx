@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -21,8 +21,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import NationalCasesBaselineChart from '@/components/dashboard/NationalCasesBaselineChart';
-import { getAlertStats, getWeeklyNationalDataFromAPI, getDistrictAlertData, diseases } from '@/lib/data';
-import { BaselineMethod, WeeklyNationalData } from '@/lib/types';
+import { getAlertStats, getWeeklyNationalDataFromAPI, getDistrictAlertData, getAlertStatsFromAPI, getDistrictAlertDataFromAPI, diseases } from '@/lib/data';
+import { BaselineMethod, WeeklyNationalData, AlertStats } from '@/lib/types';
 import { Info, Loader2, Mail, Send } from 'lucide-react';
 import InfoButton from '@/components/dashboard/InfoButton';
 import {
@@ -44,10 +44,27 @@ export default function AlertTab() {
   const [emailBody, setEmailBody] = useState<string>('');
   const [isSending, setIsSending] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [alertStats, setAlertStats] = useState<AlertStats>({
+    currentWeekCases: 0,
+    previousWeekCases: 0,
+    percentChange: 0,
+    districtsOnAlert: 0,
+    totalDistricts: 64,
+    nationalRiskLevel: 'Low',
+  });
 
-  // Calculate alert stats based on selected disease and method
-  const alertStats = useMemo(() => {
-    return getAlertStats(selectedDisease, baselineMethod, TARGET_YEAR);
+  // Fetch alert stats (async for malaria, sync for others)
+  useEffect(() => {
+    async function loadAlertStats() {
+      if (selectedDisease === 'malaria') {
+        const stats = await getAlertStatsFromAPI(selectedDisease, baselineMethod, TARGET_YEAR);
+        setAlertStats(stats);
+      } else {
+        const stats = getAlertStats(selectedDisease, baselineMethod, TARGET_YEAR);
+        setAlertStats(stats);
+      }
+    }
+    loadAlertStats();
   }, [selectedDisease, baselineMethod]);
 
   // Fetch weekly data from API when disease or baseline method changes
@@ -55,6 +72,7 @@ export default function AlertTab() {
     async function loadWeeklyData() {
       setLoading(true);
       const data = await getWeeklyNationalDataFromAPI(selectedDisease, baselineMethod, TARGET_YEAR);
+      console.log('Loaded weekly data:', data.length, 'data points');
       setWeeklyData(data);
       setLoading(false);
     }
@@ -63,8 +81,11 @@ export default function AlertTab() {
 
   // Generate email body based on districts on alert
   useEffect(() => {
-    const districtData = getDistrictAlertData(selectedDisease, baselineMethod, TARGET_YEAR);
-    const districtsOnAlert = districtData.filter(d => d.isOnAlert);
+    async function generateEmailBody() {
+      const districtData = selectedDisease === 'malaria'
+        ? await getDistrictAlertDataFromAPI(selectedDisease, baselineMethod, TARGET_YEAR)
+        : getDistrictAlertData(selectedDisease, baselineMethod, TARGET_YEAR);
+      const districtsOnAlert = districtData.filter(d => d.isOnAlert);
 
     if (districtsOnAlert.length === 0) {
       setEmailBody(`Subject: Disease Alert - No Districts Currently at Risk
@@ -118,7 +139,9 @@ Please take immediate action to investigate and respond to this alert.
 ---
 This is an automated message from Bangladesh EWARS
 For questions, contact: bangladesh-ewars@email.com`);
+      }
     }
+    generateEmailBody();
   }, [selectedDisease, baselineMethod]);
 
   const baselineMethodInfo = {
@@ -173,12 +196,20 @@ For questions, contact: bangladesh-ewars@email.com`);
   };
 
   // Calculate district distribution for pie chart
-  const districtDistribution = useMemo(() => {
-    const districtData = getDistrictAlertData(selectedDisease, baselineMethod, TARGET_YEAR);
-    return districtData
-      .sort((a, b) => b.cases - a.cases)
-      .slice(0, 10)
-      .map((d) => ({ name: d.district, value: d.cases }));
+  const [districtDistribution, setDistrictDistribution] = useState<{ name: string; value: number; }[]>([]);
+
+  useEffect(() => {
+    async function loadDistrictDistribution() {
+      const districtData = selectedDisease === 'malaria'
+        ? await getDistrictAlertDataFromAPI(selectedDisease, baselineMethod, TARGET_YEAR)
+        : getDistrictAlertData(selectedDisease, baselineMethod, TARGET_YEAR);
+      const distribution = districtData
+        .sort((a, b) => b.cases - a.cases)
+        .slice(0, 10)
+        .map((d) => ({ name: d.district, value: Math.round(d.cases) }));
+      setDistrictDistribution(distribution);
+    }
+    loadDistrictDistribution();
   }, [selectedDisease, baselineMethod]);
 
   const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4CAF50', '#E91E63'];
@@ -520,7 +551,11 @@ For questions, contact: bangladesh-ewars@email.com`);
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => {
+                    // Only show label if slice is larger than 5% to prevent overlapping
+                    if (percent < 0.05) return '';
+                    return `${name} ${(percent * 100).toFixed(0)}%`;
+                  }}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -529,7 +564,7 @@ For questions, contact: bangladesh-ewars@email.com`);
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip formatter={(value: number) => Math.round(value)} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>

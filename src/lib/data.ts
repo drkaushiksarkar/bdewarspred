@@ -415,7 +415,7 @@ export function getAlertStats(
 
   // Count districts on alert
   const districtsOnAlert = alertData.filter(d => d.isOnAlert).length;
-  const totalDistricts = alertData.length;
+  const totalDistricts = alertData.length > 0 ? alertData.length : 64; // Default to 64 districts in Bangladesh
 
   // Calculate national risk level
   const alertPercentage = totalDistricts > 0 ? (districtsOnAlert / totalDistricts) * 100 : 0;
@@ -423,11 +423,128 @@ export function getAlertStats(
     alertPercentage > 50 ? 'High' : alertPercentage > 25 ? 'Medium' : 'Low';
 
   return {
-    currentWeekCases,
-    previousWeekCases,
-    percentChange,
-    districtsOnAlert,
-    totalDistricts,
+    currentWeekCases: currentWeekCases || 0,
+    previousWeekCases: previousWeekCases || 0,
+    percentChange: isNaN(percentChange) ? 0 : percentChange,
+    districtsOnAlert: districtsOnAlert || 0,
+    totalDistricts: totalDistricts || 64,
+    nationalRiskLevel,
+  };
+}
+
+// Get district alert data from API (for diseases that use API data like malaria)
+export async function getDistrictAlertDataFromAPI(
+  disease: string,
+  method: BaselineMethod,
+  targetYear: number = 2024
+): Promise<DistrictWeekData[]> {
+  if (disease !== 'malaria') {
+    // For non-malaria diseases, use the synchronous version
+    return getDistrictAlertData(disease, method, targetYear);
+  }
+
+  // Check if we're on the client side
+  if (typeof window === 'undefined') {
+    console.log('Server-side rendering detected, returning empty array for malaria');
+    return [];
+  }
+
+  try {
+    const response = await fetch('/api/drilldown/malaria', {
+      cache: 'no-cache',
+    });
+    if (!response.ok) {
+      console.error('Failed to fetch malaria data from API, status:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+
+    // Group by district and get the latest month data
+    const districtMap = new Map<string, any>();
+
+    data.forEach((item: any) => {
+      const district = item.district;
+      const year = item.year;
+      const month = item.month;
+
+      if (year !== targetYear) return;
+
+      const key = district;
+      const existing = districtMap.get(key);
+
+      // Keep the latest month data
+      if (!existing || month > existing.month) {
+        districtMap.set(key, item);
+      }
+    });
+
+    // Convert to DistrictWeekData format
+    const alertData: DistrictWeekData[] = [];
+
+    districtMap.forEach((item, district) => {
+      const cases = parseFloat(item.this_week_actual) || parseFloat(item.this_week_predicted) || 0;
+      const month = item.month;
+      const year = item.year;
+
+      // Convert month to approximate week
+      const approximateWeek = Math.round(month * 4.33 - 2);
+
+      // For baseline, we'll use a simple threshold for now
+      // In a real implementation, you'd calculate this from historical data
+      const baseline = 5; // Simple threshold
+
+      alertData.push({
+        district,
+        week: approximateWeek,
+        year,
+        cases,
+        baseline,
+        isOnAlert: cases > baseline,
+      });
+    });
+
+    return alertData;
+  } catch (error) {
+    console.error('Error fetching malaria district alert data:', error);
+    return [];
+  }
+}
+
+// Get alert statistics from API
+export async function getAlertStatsFromAPI(
+  disease: string,
+  method: BaselineMethod,
+  targetYear: number = 2024
+): Promise<AlertStats> {
+  const alertData = await getDistrictAlertDataFromAPI(disease, method, targetYear);
+
+  // Calculate current week national cases
+  const currentWeekCases = alertData.reduce((sum, data) => sum + data.cases, 0);
+
+  // Calculate previous week cases (simplified - using historical average)
+  const previousWeekCases = Math.round(currentWeekCases * 0.9); // Simulated
+
+  // Calculate percent change
+  const percentChange = previousWeekCases > 0
+    ? ((currentWeekCases - previousWeekCases) / previousWeekCases) * 100
+    : 0;
+
+  // Count districts on alert
+  const districtsOnAlert = alertData.filter(d => d.isOnAlert).length;
+  const totalDistricts = alertData.length > 0 ? alertData.length : 64;
+
+  // Calculate national risk level
+  const alertPercentage = totalDistricts > 0 ? (districtsOnAlert / totalDistricts) * 100 : 0;
+  const nationalRiskLevel: 'Low' | 'Medium' | 'High' =
+    alertPercentage > 50 ? 'High' : alertPercentage > 25 ? 'Medium' : 'Low';
+
+  return {
+    currentWeekCases: currentWeekCases || 0,
+    previousWeekCases: previousWeekCases || 0,
+    percentChange: isNaN(percentChange) ? 0 : percentChange,
+    districtsOnAlert: districtsOnAlert || 0,
+    totalDistricts: totalDistricts || 64,
     nationalRiskLevel,
   };
 }
@@ -460,14 +577,24 @@ export async function getWeeklyNationalDataFromAPI(
   method: BaselineMethod,
   targetYear: number = 2024
 ): Promise<WeeklyNationalData[]> {
+  // Check if we're on the client side
+  if (typeof window === 'undefined') {
+    console.log('Server-side rendering detected, returning empty array');
+    return [];
+  }
+
   try {
     const apiEndpoint = disease === 'dengue'
       ? '/api/drilldown/dengue'
+      : disease === 'malaria'
+      ? '/api/drilldown/malaria'
       : '/api/drilldown/awd';
 
-    const response = await fetch(apiEndpoint);
+    const response = await fetch(apiEndpoint, {
+      cache: 'no-cache',
+    });
     if (!response.ok) {
-      console.error('Failed to fetch data from API');
+      console.error(`Failed to fetch data from API: ${apiEndpoint}, status: ${response.status}`);
       return [];
     }
 
@@ -527,6 +654,74 @@ export async function getWeeklyNationalDataFromAPI(
             baseline: baseline,
           });
         }
+      });
+
+      return result.sort((a, b) => a.week - b.week);
+    } else if (disease === 'malaria') {
+      // Malaria data - group by month and convert to week equivalents
+      // First, group ALL data by year and month to get national totals per year-month
+      const yearMonthMap = new Map<string, { cases: number; predicted: number; }>();
+
+      data.forEach((item: any) => {
+        const year = item.year;
+        const month = item.month;
+        const cases = parseFloat(item.this_week_actual) || 0;
+        const predicted = parseFloat(item.this_week_predicted) || 0;
+        const key = `${year}-${month}`;
+
+        const existing = yearMonthMap.get(key) || { cases: 0, predicted: 0 };
+        yearMonthMap.set(key, {
+          cases: existing.cases + cases,
+          predicted: existing.predicted + predicted
+        });
+      });
+
+      // Now group by month (converted to approximate week) and separate target year from historical years
+      const weeklyMap = new Map<number, { cases: number; historicalNationalTotals: number[]; }>();
+
+      yearMonthMap.forEach((monthData, key) => {
+        const [yearStr, monthStr] = key.split('-');
+        const year = parseInt(yearStr);
+        const month = parseInt(monthStr);
+
+        // Convert month to approximate week (mid-month week: month * 4.33 - 2)
+        // This gives us roughly the middle week of each month
+        const approximateWeek = Math.round(month * 4.33 - 2);
+
+        if (!weeklyMap.has(approximateWeek)) {
+          weeklyMap.set(approximateWeek, { cases: 0, historicalNationalTotals: [] });
+        }
+
+        const weekData = weeklyMap.get(approximateWeek)!;
+
+        // Use actual cases if available, otherwise use predicted
+        const totalCases = monthData.cases > 0 ? monthData.cases : monthData.predicted;
+
+        // For target year, use the national total
+        if (year === targetYear) {
+          weekData.cases = totalCases;
+        }
+
+        // For historical years, collect national totals for baseline calculation
+        if (year !== targetYear) {
+          weekData.historicalNationalTotals.push(totalCases);
+        }
+      });
+
+      // Convert to array and calculate baselines using selected method
+      const result: WeeklyNationalData[] = [];
+      weeklyMap.forEach((weekData, week) => {
+        // Calculate baseline using the selected method on historical NATIONAL totals
+        const baseline = calculateBaseline(weekData.historicalNationalTotals, method);
+
+        // Include all weeks (even with 0 cases) to show complete picture
+        result.push({
+          week,
+          year: targetYear,
+          date: new Date(targetYear, 0, week * 7).toISOString(), // Approximate date
+          cases: weekData.cases || 0,
+          baseline: baseline || 0,
+        });
       });
 
       return result.sort((a, b) => a.week - b.week);

@@ -12,18 +12,41 @@ const pool = new Pool({
 
 export async function GET() {
   try {
-    // Query the malaria_weather table
+    // Query both P. falciparum and P. vivax acceleration alerts and combine them
     const result = await pool.query(`
       SELECT
-        id,
         district,
-        date,
-        weekly_cases,
-        temperature,
-        humidity,
-        rainfall
-      FROM malaria_weather
-      ORDER BY date DESC
+        year,
+        month,
+        SUM(last_week_cases) as last_week_cases,
+        SUM(this_week_actual) as this_week_actual,
+        SUM(this_week_predicted) as this_week_predicted,
+        SUM(next_week_forecast) as next_week_forecast
+      FROM (
+        SELECT
+          district,
+          year,
+          month,
+          SUM(last_week_cases) as last_week_cases,
+          SUM(this_week_actual) as this_week_actual,
+          SUM(this_week_predicted) as this_week_predicted,
+          SUM(next_week_forecast) as next_week_forecast
+        FROM malaria_pf_acceleration_alerts
+        GROUP BY district, year, month
+        UNION ALL
+        SELECT
+          district,
+          year,
+          month,
+          SUM(last_week_cases) as last_week_cases,
+          SUM(this_week_actual) as this_week_actual,
+          SUM(this_week_predicted) as this_week_predicted,
+          SUM(next_week_forecast) as next_week_forecast
+        FROM malaria_pv_acceleration_alerts
+        GROUP BY district, year, month
+      ) combined
+      GROUP BY district, year, month
+      ORDER BY year, month, district
     `);
 
     return NextResponse.json(result.rows);
