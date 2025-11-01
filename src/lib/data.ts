@@ -460,26 +460,31 @@ export async function getDistrictAlertDataFromAPI(
 
     const data = await response.json();
 
-    // Group by district and get the latest week data for target year
-    const districtMap = new Map<string, any>();
+    // Group by district and aggregate total cases for target year
+    const districtTotalCases = new Map<string, { totalCases: number; latestWeek: number }>();
 
     data.forEach((item: any) => {
       const district = item.district;
       const year = parseInt(item.year);
       const week = parseInt(item.epi_week);
+      const cases = parseFloat(item.weekly_hospitalised_cases) || parseFloat(item.daily_cases) || 0;
 
       if (year !== targetYear) return;
 
-      const key = district;
-      const existing = districtMap.get(key);
+      const existing = districtTotalCases.get(district);
 
-      // Keep the latest week data
-      if (!existing || week > existing.epi_week) {
-        districtMap.set(key, item);
+      if (!existing) {
+        districtTotalCases.set(district, { totalCases: cases, latestWeek: week });
+      } else {
+        // Accumulate total cases and track latest week
+        existing.totalCases += cases;
+        if (week > existing.latestWeek) {
+          existing.latestWeek = week;
+        }
       }
     });
 
-    // Get historical data for baseline calculation
+    // Get historical data for baseline calculation (aggregate by district and week)
     const historicalDataByDistrict = new Map<string, Map<number, number[]>>();
 
     data.forEach((item: any) => {
@@ -505,22 +510,20 @@ export async function getDistrictAlertDataFromAPI(
     // Convert to DistrictWeekData format
     const alertData: DistrictWeekData[] = [];
 
-    districtMap.forEach((item, district) => {
-      const cases = parseFloat(item.weekly_hospitalised_cases) || parseFloat(item.daily_cases) || 0;
-      const week = parseInt(item.epi_week);
-      const year = parseInt(item.year);
+    districtTotalCases.forEach((data, district) => {
+      const { totalCases, latestWeek } = data;
 
-      // Calculate baseline from historical data
-      const historicalData = historicalDataByDistrict.get(district)?.get(week) || [];
+      // Calculate baseline from historical data for the latest week
+      const historicalData = historicalDataByDistrict.get(district)?.get(latestWeek) || [];
       const baseline = calculateBaseline(historicalData, method);
 
       alertData.push({
         district,
-        week,
-        year,
-        cases,
+        week: latestWeek,
+        year: targetYear,
+        cases: totalCases, // Use total cases for the year
         baseline,
-        isOnAlert: cases > baseline,
+        isOnAlert: totalCases > baseline * 52, // Compare annual total to annual baseline
       });
     });
 
