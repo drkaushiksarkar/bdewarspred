@@ -10,15 +10,26 @@ const pool = new Pool({
   password: process.env.PG_PASS_2,
 });
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get('type'); // 'pf', 'pv', or null for combined
+
+    // Determine which column to sum based on type
+    let casesColumn = 'SUM(COALESCE(pv, 0) + COALESCE(pf, 0))';
+    if (type === 'pf') {
+      casesColumn = 'SUM(COALESCE(pf, 0))';
+    } else if (type === 'pv') {
+      casesColumn = 'SUM(COALESCE(pv, 0))';
+    }
+
     // Query malaria_weather table with weather data
     const result = await pool.query(`
       SELECT
         dis_name as district,
         year,
         month,
-        SUM(COALESCE(pv, 0) + COALESCE(pf, 0)) as total_cases,
+        ${casesColumn} as total_cases,
         AVG(COALESCE(average_temperature, 0)) as temperature,
         AVG(COALESCE(relative_humidity, 0)) as humidity,
         AVG(COALESCE(total_rainfall, 0)) as rainfall

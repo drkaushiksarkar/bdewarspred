@@ -243,7 +243,8 @@ export async function getTopDistrictsByLastWeekCasesFromDB(
   const tableMap: { [key: string]: string } = {
     dengue: 'dengue_acceleration_alerts',
     diarrhoea: 'diarrhoea_acceleration_alerts',
-    malaria: 'malaria_acceleration_alerts',
+    malaria_pf: 'malaria_pf_acceleration_alerts',
+    malaria_pv: 'malaria_pv_acceleration_alerts',
   };
 
   const tableName = tableMap[disease];
@@ -253,26 +254,50 @@ export async function getTopDistrictsByLastWeekCasesFromDB(
   }
 
   try {
-    const result = await query<AccelerationAlertData>(
-      `SELECT
-        district,
-        year,
-        epi_week,
-        last_week_cases,
-        this_week_actual,
-        this_week_predicted,
-        next_week_forecast,
-        growth_rate_wow,
-        growth_flag
-       FROM ${tableName}
-       WHERE year = (SELECT MAX(year) FROM ${tableName})
-         AND epi_week = (SELECT MAX(epi_week) FROM ${tableName} WHERE year = (SELECT MAX(year) FROM ${tableName}))
-       ORDER BY last_week_cases DESC
-       LIMIT $1`,
-      [limit]
-    );
+    // For malaria, use month instead of epi_week
+    if (disease === 'malaria_pf' || disease === 'malaria_pv') {
+      const result = await query<AccelerationAlertData>(
+        `SELECT
+          district,
+          year,
+          month as epi_week,
+          last_week_actual as last_week_cases,
+          this_week_actual,
+          this_week_predicted,
+          next_week_forecast,
+          growth_rate_wow,
+          growth_flag
+         FROM ${tableName}
+         WHERE year = (SELECT MAX(year) FROM ${tableName})
+           AND month = (SELECT MAX(month) FROM ${tableName} WHERE year = (SELECT MAX(year) FROM ${tableName}))
+         ORDER BY last_week_actual DESC
+         LIMIT $1`,
+        [limit]
+      );
 
-    return result.rows;
+      return result.rows;
+    } else {
+      const result = await query<AccelerationAlertData>(
+        `SELECT
+          district,
+          year,
+          epi_week,
+          last_week_cases,
+          this_week_actual,
+          this_week_predicted,
+          next_week_forecast,
+          growth_rate_wow,
+          growth_flag
+         FROM ${tableName}
+         WHERE year = (SELECT MAX(year) FROM ${tableName})
+           AND epi_week = (SELECT MAX(epi_week) FROM ${tableName} WHERE year = (SELECT MAX(year) FROM ${tableName}))
+         ORDER BY last_week_cases DESC
+         LIMIT $1`,
+        [limit]
+      );
+
+      return result.rows;
+    }
   } catch (error) {
     console.error(`Error fetching acceleration alerts for ${disease}:`, error);
     return [];
@@ -301,6 +326,8 @@ export async function getDistrictPredictionsFromAccelerationAlerts(
   const tableMap: { [key: string]: string } = {
     dengue: 'dengue_acceleration_alerts',
     diarrhoea: 'diarrhoea_acceleration_alerts',
+    malaria_pf: 'malaria_pf_acceleration_alerts',
+    malaria_pv: 'malaria_pv_acceleration_alerts',
   };
 
   const tableName = tableMap[disease];
@@ -310,23 +337,44 @@ export async function getDistrictPredictionsFromAccelerationAlerts(
   }
 
   try {
-    const result = await query<{ district: string; this_week_predicted: number }>(
-      `SELECT
-        district,
-        this_week_predicted
-       FROM ${tableName}
-       WHERE year = (SELECT MAX(year) FROM ${tableName})
-         AND epi_week = (SELECT MAX(epi_week) FROM ${tableName} WHERE year = (SELECT MAX(year) FROM ${tableName}))`
-    );
+    // For malaria, use month instead of epi_week
+    if (disease === 'malaria_pf' || disease === 'malaria_pv') {
+      const result = await query<{ district: string; this_week_predicted: number }>(
+        `SELECT
+          district,
+          this_week_predicted
+         FROM ${tableName}
+         WHERE year = (SELECT MAX(year) FROM ${tableName})
+           AND month = (SELECT MAX(month) FROM ${tableName} WHERE year = (SELECT MAX(year) FROM ${tableName}))`
+      );
 
-    const totals: { [districtName: string]: number } = {};
-    result.rows.forEach((row) => {
-      // Properly capitalize district names to match GeoJSON format
-      const districtName = capitalizeDistrictName(row.district);
-      totals[districtName] = row.this_week_predicted || 0;
-    });
+      const totals: { [districtName: string]: number } = {};
+      result.rows.forEach((row) => {
+        // Properly capitalize district names to match GeoJSON format
+        const districtName = capitalizeDistrictName(row.district);
+        totals[districtName] = row.this_week_predicted || 0;
+      });
 
-    return totals;
+      return totals;
+    } else {
+      const result = await query<{ district: string; this_week_predicted: number }>(
+        `SELECT
+          district,
+          this_week_predicted
+         FROM ${tableName}
+         WHERE year = (SELECT MAX(year) FROM ${tableName})
+           AND epi_week = (SELECT MAX(epi_week) FROM ${tableName} WHERE year = (SELECT MAX(year) FROM ${tableName}))`
+      );
+
+      const totals: { [districtName: string]: number } = {};
+      result.rows.forEach((row) => {
+        // Properly capitalize district names to match GeoJSON format
+        const districtName = capitalizeDistrictName(row.district);
+        totals[districtName] = row.this_week_predicted || 0;
+      });
+
+      return totals;
+    }
   } catch (error) {
     console.error(`Error fetching district predictions for ${disease}:`, error);
     return {};

@@ -43,13 +43,15 @@ export async function GET(request: Request) {
     const weatherTableMap: { [key: string]: string } = {
       dengue: 'dengue_weather',
       diarrhoea: 'awd_weather',
-      malaria: 'malaria_weather',
+      malaria_pf: 'malaria_weather',
+      malaria_pv: 'malaria_weather',
     };
 
     const predictionsTableMap: { [key: string]: string } = {
       dengue: 'dengue_acceleration_alerts',
       diarrhoea: 'diarrhoea_acceleration_alerts',
-      malaria: 'malaria_predictions',
+      malaria_pf: 'malaria_pf_predictions',
+      malaria_pv: 'malaria_pv_predictions',
     };
 
     const weatherTable = weatherTableMap[disease];
@@ -67,15 +69,15 @@ export async function GET(request: Request) {
 
     // Fetch historical data from weather tables using weatherPool
     try {
-      if (disease === 'malaria') {
-        // Malaria weather table has monthly data with columns: dis_name, year, month, pv, pf
-        // Note: Data includes multiple upazilas per district, so we need to aggregate
-        console.log(`Querying malaria_weather for district: ${district}`);
+      if (disease === 'malaria_pf' || disease === 'malaria_pv') {
+        // For malaria, always show combined PF + PV historical data
+        // This provides context for both disease types
+        console.log(`Querying malaria_weather for district: ${district}, showing combined PF+PV historical data`);
         const result = await weatherPool.query(
           `SELECT
             year,
             month,
-            SUM(COALESCE(pv, 0) + COALESCE(pf, 0)) as cases
+            SUM(COALESCE(pf, 0) + COALESCE(pv, 0)) as cases
            FROM malaria_weather
            WHERE LOWER(dis_name) = LOWER($1)
              AND year IS NOT NULL
@@ -84,7 +86,7 @@ export async function GET(request: Request) {
            ORDER BY year, month`,
           [district]
         );
-        console.log(`Fetched ${result.rows.length} rows from malaria_weather`);
+        console.log(`Fetched ${result.rows.length} rows of combined malaria_weather data`);
 
         // Transform to date format
         historicalData = result.rows.map((row: any) => ({
@@ -202,26 +204,30 @@ export async function GET(request: Request) {
       console.log(`Filtered to ${historicalData.length} data points within date range`);
     }
 
-    // Fetch the latest prediction - for malaria, use acceleration alerts tables
+    // Fetch the latest prediction
     try {
-      if (disease === 'malaria') {
-        // For malaria, use acceleration alerts tables (pf and pv combined)
-        console.log(`Querying malaria acceleration alerts for district: ${district}`);
+      if (disease === 'malaria_pf' || disease === 'malaria_pv') {
+        // For malaria, use the specific predictions table
+        console.log(`Querying ${predictionsTable} for district: ${district}`);
         try {
           const result = await query<{
             year: number;
             month: number;
-            this_week_predicted: number;
+            predicted: number;
+            uncertainty_low: number;
+            uncertainty_high: number;
           }>(
             `SELECT
               year,
               month,
-              this_week_predicted
-             FROM ${table('malaria_pf_acceleration_alerts')}
+              predicted,
+              uncertainty_low,
+              uncertainty_high
+             FROM ${table(predictionsTable)}
              WHERE LOWER(district) = LOWER($1)
                AND year IS NOT NULL
                AND month IS NOT NULL
-               AND this_week_predicted IS NOT NULL
+               AND predicted IS NOT NULL
              ORDER BY year DESC, month DESC
              LIMIT 1`,
             [district]
@@ -231,16 +237,16 @@ export async function GET(request: Request) {
             const row = result.rows[0];
             predictionData = {
               report_date: `${row.year}-${String(row.month).padStart(2, '0')}-01`,
-              predicted: row.this_week_predicted,
-              uncertainity_low: row.this_week_predicted * 0.8,
-              uncertainity_high: row.this_week_predicted * 1.2,
+              predicted: row.predicted,
+              uncertainity_low: row.uncertainty_low || row.predicted * 0.8,
+              uncertainity_high: row.uncertainty_high || row.predicted * 1.2,
             };
-            console.log(`Found malaria prediction for ${district}:`, predictionData);
+            console.log(`Found ${disease} prediction for ${district}:`, predictionData);
           } else {
-            console.log(`No prediction data found in malaria_pf_acceleration_alerts for ${district}`);
+            console.log(`No prediction data found in ${predictionsTable} for ${district}`);
           }
         } catch (innerError) {
-          console.error(`Malaria acceleration alerts query failed:`, (innerError as Error).message);
+          console.error(`${disease} predictions query failed:`, (innerError as Error).message);
         }
       } else {
         // Dengue and diarrhoea predictions from acceleration_alerts tables
@@ -291,7 +297,13 @@ export async function GET(request: Request) {
     }
 
     // Transform data for the chart
-    const chartData = historicalData.map((row: any) => ({
+    const chartData: Array<{
+      date: any;
+      cases: any;
+      type: string;
+      uncertainity_low?: number;
+      uncertainity_high?: number;
+    }> = historicalData.map((row: any) => ({
       date: row.report_date,
       cases: row.cases,
       type: 'historical',

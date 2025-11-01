@@ -18,8 +18,17 @@ export async function GET(request: Request) {
     const district = searchParams.get('district');
     const dateFrom = searchParams.get('from');
     const dateTo = searchParams.get('to');
+    const type = searchParams.get('type'); // 'pf', 'pv', or null for combined
 
-    console.log(`Fetching malaria cases for district: ${district || 'all'}, dateFrom: ${dateFrom}, dateTo: ${dateTo}`);
+    console.log(`Fetching malaria cases for district: ${district || 'all'}, type: ${type || 'combined'}, dateFrom: ${dateFrom}, dateTo: ${dateTo}`);
+
+    // Determine which column to sum based on type
+    let casesColumn = 'SUM(COALESCE(pv, 0) + COALESCE(pf, 0))';
+    if (type === 'pf') {
+      casesColumn = 'SUM(COALESCE(pf, 0))';
+    } else if (type === 'pv') {
+      casesColumn = 'SUM(COALESCE(pv, 0))';
+    }
 
     // Base query for malaria cases
     let query = `
@@ -27,7 +36,7 @@ export async function GET(request: Request) {
         dis_name as district,
         year,
         month,
-        SUM(COALESCE(pv, 0) + COALESCE(pf, 0)) as total_cases
+        ${casesColumn} as total_cases
       FROM malaria_weather
       WHERE year IS NOT NULL AND month IS NOT NULL
     `;

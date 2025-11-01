@@ -21,7 +21,8 @@ export { locations };
 
 export const diseases: Disease[] = [
   { id: 'dengue', name: 'Dengue' },
-  { id: 'malaria', name: 'Malaria' },
+  { id: 'malaria_pf', name: 'Malaria PF' },
+  { id: 'malaria_pv', name: 'Malaria PV' },
   { id: 'diarrhoea', name: 'Acute Watery Diarrhoea' },
 ];
 
@@ -438,7 +439,7 @@ export async function getDistrictAlertDataFromAPI(
   method: BaselineMethod,
   targetYear: number = 2024
 ): Promise<DistrictWeekData[]> {
-  if (disease !== 'malaria') {
+  if (disease !== 'malaria_pf' && disease !== 'malaria_pv') {
     // For non-malaria diseases, use the synchronous version
     return getDistrictAlertData(disease, method, targetYear);
   }
@@ -450,7 +451,8 @@ export async function getDistrictAlertDataFromAPI(
   }
 
   try {
-    const response = await fetch('/api/drilldown/malaria', {
+    const type = disease === 'malaria_pf' ? 'pf' : 'pv';
+    const response = await fetch(`/api/drilldown/malaria?type=${type}`, {
       cache: 'no-cache',
     });
     if (!response.ok) {
@@ -607,11 +609,16 @@ export async function getWeeklyNationalDataFromAPI(
   }
 
   try {
-    const apiEndpoint = disease === 'dengue'
-      ? '/api/drilldown/dengue'
-      : disease === 'malaria'
-      ? '/api/drilldown/malaria'
-      : '/api/drilldown/awd';
+    let apiEndpoint = '';
+    if (disease === 'dengue') {
+      apiEndpoint = '/api/drilldown/dengue';
+    } else if (disease === 'malaria_pf') {
+      apiEndpoint = '/api/drilldown/malaria?type=pf';
+    } else if (disease === 'malaria_pv') {
+      apiEndpoint = '/api/drilldown/malaria?type=pv';
+    } else {
+      apiEndpoint = '/api/drilldown/awd';
+    }
 
     const response = await fetch(apiEndpoint, {
       cache: 'no-cache',
@@ -680,9 +687,9 @@ export async function getWeeklyNationalDataFromAPI(
       });
 
       return result.sort((a, b) => a.week - b.week);
-    } else if (disease === 'malaria') {
+    } else if (disease === 'malaria_pf' || disease === 'malaria_pv') {
       // Malaria data - now uses same format as dengue (from malaria_weather table)
-      console.log('Malaria raw data from API:', data.length, 'rows');
+      console.log(`${disease} raw data from API:`, data.length, 'rows');
       console.log('Sample data:', data.slice(0, 3));
 
       // First, group ALL data by year and week to get national totals per year-week

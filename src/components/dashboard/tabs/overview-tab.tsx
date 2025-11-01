@@ -82,7 +82,8 @@ export default function OverviewTab() {
   const [diseaseData, setDiseaseData] = React.useState<DiseaseData[]>([]);
   const [weatherError, setWeatherError] = React.useState(false);
   const [accelerationAlerts, setAccelerationAlerts] = React.useState<AccelerationAlertData[]>([]);
-  const [malariaData, setMalariaData] = React.useState({ totalCases: 0, trend: 0 });
+  const [malariaPfData, setMalariaPfData] = React.useState({ totalCases: 0, trend: 0 });
+  const [malariaPvData, setMalariaPvData] = React.useState({ totalCases: 0, trend: 0 });
 
   React.useEffect(() => {
     async function loadWeather() {
@@ -99,7 +100,7 @@ export default function OverviewTab() {
       districtName = selectedDistrict ? selectedDistrict.name : undefined;
     }
 
-    // Fetch malaria data from PostgreSQL API
+    // Fetch malaria data from PostgreSQL API (both PF and PV)
     async function loadMalariaData() {
       try {
         const params = new URLSearchParams();
@@ -113,17 +114,33 @@ export default function OverviewTab() {
           params.set('to', dateTo);
         }
 
-        const response = await fetch(`/api/malaria-cases?${params.toString()}`);
-        if (response.ok) {
-          const data = await response.json();
-          setMalariaData({ totalCases: data.totalCases, trend: data.trend });
+        // Fetch PF data
+        const pfParams = new URLSearchParams(params);
+        pfParams.set('type', 'pf');
+        const pfResponse = await fetch(`/api/malaria-cases?${pfParams.toString()}`);
+        if (pfResponse.ok) {
+          const pfData = await pfResponse.json();
+          setMalariaPfData({ totalCases: pfData.totalCases, trend: pfData.trend });
         } else {
-          console.error('Failed to fetch malaria data');
-          setMalariaData({ totalCases: 0, trend: 0 });
+          console.error('Failed to fetch malaria PF data');
+          setMalariaPfData({ totalCases: 0, trend: 0 });
+        }
+
+        // Fetch PV data
+        const pvParams = new URLSearchParams(params);
+        pvParams.set('type', 'pv');
+        const pvResponse = await fetch(`/api/malaria-cases?${pvParams.toString()}`);
+        if (pvResponse.ok) {
+          const pvData = await pvResponse.json();
+          setMalariaPvData({ totalCases: pvData.totalCases, trend: pvData.trend });
+        } else {
+          console.error('Failed to fetch malaria PV data');
+          setMalariaPvData({ totalCases: 0, trend: 0 });
         }
       } catch (error) {
         console.error('Error loading malaria data:', error);
-        setMalariaData({ totalCases: 0, trend: 0 });
+        setMalariaPfData({ totalCases: 0, trend: 0 });
+        setMalariaPvData({ totalCases: 0, trend: 0 });
       }
     }
 
@@ -166,20 +183,34 @@ export default function OverviewTab() {
 
   // Merge malaria data with other disease data
   const allDiseaseData = React.useMemo(() => {
-    // Find and update the malaria entry in diseaseData
-    const updatedData = diseaseData.map(disease => {
-      if (disease.label === 'Malaria') {
-        return {
-          ...disease,
-          value: malariaData.totalCases.toLocaleString(),
-          trend: malariaData.trend,
-          is_high: malariaData.totalCases > 4000
-        };
-      }
-      return disease;
-    });
-    return updatedData;
-  }, [diseaseData, malariaData]);
+    // Remove old "Malaria" entry if it exists
+    const filteredData = diseaseData.filter(d => d.label !== 'Malaria');
+
+    // Calculate combined malaria data
+    const totalMalariaCases = malariaPfData.totalCases + malariaPvData.totalCases;
+    const pvPercentage = totalMalariaCases > 0
+      ? Math.round((malariaPvData.totalCases / totalMalariaCases) * 100)
+      : 0;
+
+    // Calculate weighted average trend
+    const avgTrend = totalMalariaCases > 0
+      ? Math.round(
+          (malariaPfData.trend * malariaPfData.totalCases +
+           malariaPvData.trend * malariaPvData.totalCases) / totalMalariaCases
+        )
+      : 0;
+
+    // Add combined Malaria card with PV percentage
+    const malariaCard: DiseaseData = {
+      label: `Malaria (${pvPercentage}% PV)`,
+      value: totalMalariaCases.toLocaleString(),
+      trend: avgTrend,
+      is_high: totalMalariaCases > 4000
+    };
+
+    // Insert malaria card at the beginning (before Dengue and Diarrhoea)
+    return [malariaCard, ...filteredData];
+  }, [diseaseData, malariaPfData, malariaPvData]);
 
   return (
     <div className="space-y-6">
