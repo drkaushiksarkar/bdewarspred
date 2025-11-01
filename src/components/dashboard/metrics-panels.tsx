@@ -27,6 +27,8 @@ const weatherIconMap = {
 };
 
 const diseaseIconMap = {
+  'Malaria PF': Bug,
+  'Malaria PV': Bug,
   Malaria: Bug,
   Dengue: Activity,
   Diarrhoea: Droplet,
@@ -48,6 +50,14 @@ const weatherColors = {
 };
 
 const diseaseColors = {
+  'Malaria PF': {
+    bg: 'bg-purple-50',
+    icon: 'text-purple-600',
+  },
+  'Malaria PV': {
+    bg: 'bg-indigo-50',
+    icon: 'text-indigo-600',
+  },
   Malaria: {
     bg: 'bg-purple-50',
     icon: 'text-purple-600',
@@ -125,18 +135,20 @@ export default function MetricsPanels({ weatherData, diseaseData, weatherError }
         );
       })}
       {diseaseData.map((item) => {
-        const Icon = diseaseIconMap[item.label];
-        const colors = diseaseColors[item.label];
+        // Handle malaria with percentage label (e.g., "Malaria (33% PV)")
+        const diseaseKey = item.label.startsWith('Malaria') ? 'Malaria' : item.label;
+        const Icon = diseaseIconMap[diseaseKey] || diseaseIconMap[item.label];
+        const colors = diseaseColors[diseaseKey] || diseaseColors[item.label];
         const hasIncreased = item.trend && item.trend > 0;
         const hasDecreased = item.trend && item.trend < 0;
 
         return (
-          <Card key={item.label} className={cn('flex flex-col border-0 shadow-md', colors.bg)}>
+          <Card key={item.label} className={cn('flex flex-col border-0 shadow-md', colors?.bg || 'bg-gray-50')}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {item.label}
               </CardTitle>
-              <Icon className={cn('h-5 w-5', colors.icon)} />
+              {Icon && <Icon className={cn('h-5 w-5', colors?.icon || 'text-gray-600')} />}
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-2">

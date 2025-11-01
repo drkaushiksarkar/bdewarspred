@@ -108,70 +108,70 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
                 )}
               >
                 <CardContent className="p-4">
-                  {/* District Header */}
+                  {/* Location Name */}
+                  <h3
+                    className="font-semibold text-base text-gray-900 truncate mb-1"
+                    title={district.district}
+                  >
+                    {district.district}
+                  </h3>
+
+                  {/* Week Number */}
+                  <p className="text-xs text-gray-500 mb-3">
+                    Week {district.epi_week}, {district.year}
+                  </p>
+
+                  {/* This Week and Last Week Side by Side */}
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div className={cn('p-2 rounded-lg flex-shrink-0', trendInfo.bgColor)}>
-                        <MapPin className={cn('h-5 w-5', trendInfo.color)} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold text-sm text-gray-900 truncate">
-                          {district.district}
-                        </h3>
-                        <p className="text-xs text-gray-500 truncate">
-                          Week {district.epi_week}, {district.year}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Case Count */}
-                  <div className="mb-3">
-                    <div className="text-3xl font-bold text-gray-900">
-                      {Math.round(district.last_week_cases)}
-                    </div>
-                    <div className="text-xs text-gray-600 mt-0.5">Cases last week</div>
-                  </div>
-
-                  {/* Trend Indicator */}
-                  <div className="flex flex-col gap-2 pt-3 border-t border-gray-200">
-                    <div className="flex items-center gap-1.5">
-                      <div className={cn('flex items-center gap-1', trendInfo.color)}>
-                        {trendInfo.icon}
-                        <span className="text-sm font-medium">
-                          {growthRateAbs > 0 ? `${growthRateAbs.toFixed(0)}%` : '0%'}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-600">vs previous</span>
-                    </div>
-                    <Badge
-                      variant={
-                        trendInfo.label === 'Rising'
-                          ? 'destructive'
-                          : trendInfo.label === 'Declining'
-                          ? 'default'
-                          : 'secondary'
-                      }
-                      className={cn(
-                        'text-xs w-fit',
-                        trendInfo.label === 'Declining' && 'bg-green-100 text-green-800 hover:bg-green-100'
-                      )}
-                    >
-                      {trendInfo.label}
-                    </Badge>
-                  </div>
-
-                  {/* This Week Actual (if available) */}
-                  {district.this_week_actual !== undefined && district.this_week_actual !== null && (
-                    <div className="mt-2 pt-2 border-t border-gray-200">
-                      <div className="text-xs text-gray-600">
-                        This week:{' '}
-                        <span className="font-semibold text-gray-900">
+                    {/* Left: This Week */}
+                    {district.this_week_actual !== undefined && district.this_week_actual !== null && (
+                      <div className="flex-1">
+                        <div className="text-xs text-gray-500 mb-1">
+                          This Week
+                        </div>
+                        <div className="text-3xl font-bold text-gray-900">
                           {Math.round(district.this_week_actual)}
-                        </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Right: Badge and Last Week */}
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge
+                        variant={
+                          trendInfo.label === 'Rising'
+                            ? 'destructive'
+                            : trendInfo.label === 'Declining'
+                            ? 'default'
+                            : 'secondary'
+                        }
+                        className={cn(
+                          'text-xs',
+                          trendInfo.label === 'Declining' && 'bg-green-100 text-green-800 hover:bg-green-100'
+                        )}
+                      >
+                        {trendInfo.label}
+                      </Badge>
+                      <div className="text-right">
+                        <div className="text-xs text-gray-500">Last Week</div>
+                        <div className="text-lg font-semibold text-gray-700">
+                          {Math.round(district.last_week_cases)}
+                        </div>
                       </div>
                     </div>
-                  )}
+                  </div>
+
+                  {/* WoW Change Indicator */}
+                  <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                    <span className="text-xs text-gray-500">WoW Change:</span>
+                    <div className={cn('flex items-center gap-1', trendInfo.color)}>
+                      {trendInfo.icon}
+                      <span className="text-sm font-bold">
+                        {growthRateAbs > 0 ? '+' : ''}
+                        {growthRateAbs > 0 ? `${growthRateAbs.toFixed(0)}%` : '0%'}
+                      </span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             );

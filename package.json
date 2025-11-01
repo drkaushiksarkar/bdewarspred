@@ -53,6 +53,7 @@
     "maplibre-gl": "^4.5.0",
     "next": "15.3.3",
     "next-auth": "^4.24.11",
+    "nodemailer": "^6.10.1",
     "papaparse": "^5.5.3",
     "patch-package": "^8.0.0",
     "pg": "^8.16.3",
@@ -68,6 +69,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.13",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.3",
     "@types/papaparse": "^5.3.15",
     "@types/pg": "^8.15.5",
     "@types/react": "^18",

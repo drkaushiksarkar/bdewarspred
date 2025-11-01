@@ -9,9 +9,9 @@ export async function GET(request: Request) {
     const disease = searchParams.get('disease') || 'dengue';
 
     // Validate disease parameter
-    if (disease !== 'dengue' && disease !== 'diarrhoea') {
+    if (disease !== 'dengue' && disease !== 'diarrhoea' && disease !== 'malaria_pf' && disease !== 'malaria_pv') {
       return NextResponse.json(
-        { error: 'Invalid disease parameter. Must be "dengue" or "diarrhoea"' },
+        { error: 'Invalid disease parameter. Must be "dengue", "diarrhoea", "malaria_pf", or "malaria_pv"' },
         { status: 400 }
       );
     }

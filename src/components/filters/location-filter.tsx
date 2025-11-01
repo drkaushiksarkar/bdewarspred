@@ -18,9 +18,28 @@ export function LocationFilter() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const selectedDivision = searchParams.get('division') || '6'; // Default to Dhaka
-  const selectedDistrict = searchParams.get('district');
-  const selectedUpazila = searchParams.get('upazila');
+  const selectedDivision = searchParams.get('division') || '6'; // Default to Dhaka Division
+  const selectedDistrict = searchParams.get('district') || '47'; // Default to Dhaka District
+  const selectedUpazila = searchParams.get('upazila') || ''; // No default upazila
+
+  // Initialize URL params with defaults on first load
+  React.useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    let hasChanges = false;
+
+    if (!searchParams.get('division')) {
+      params.set('division', '6');
+      hasChanges = true;
+    }
+    if (!searchParams.get('district')) {
+      params.set('district', '47');
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  }, []);
 
   const divisions = React.useMemo(() => locations.filter((l) => l.level === 'division'), []);
   const districts = React.useMemo(

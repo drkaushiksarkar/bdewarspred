@@ -12,18 +12,18 @@ export async function GET(request: Request) {
     const tableMap: { [key: string]: string } = {
       dengue: 'dengue_exec_summary',
       diarrhoea: 'diarrhoea_exec_summary',
-      malaria: null, // Malaria doesn't have an exec_summary table yet
+      malaria_pf: 'malaria_pf_exec_summary',
+      malaria_pv: 'malaria_pv_exec_summary',
     };
 
     const tableName = tableMap[disease];
 
-    // Return mock data for malaria until table is available
-    if (disease === 'malaria' || !tableName) {
-      return NextResponse.json({
-        r2_score: 0.85,
-        smape: 0.925, // As decimal for consistent display
-        coverage_90: 0.88,
-      });
+    // Return error for unknown diseases
+    if (!tableName) {
+      return NextResponse.json(
+        { error: 'Invalid disease parameter' },
+        { status: 400 }
+      );
     }
 
     // Query the summary column and extract Model Calibration data

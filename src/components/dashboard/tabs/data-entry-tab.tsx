@@ -2,6 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Upload, Link2, FileText } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -12,15 +14,35 @@ export default function DataEntryTab() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="font-headline text-2xl">Data Entry Portal</CardTitle>
+              <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                Data Entry Portal
+                <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                  BETA
+                </Badge>
+              </CardTitle>
               <CardDescription className="mt-2">
                 Upload and manage your EWARS data
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm">
-              <FileText className="h-4 w-4 mr-2" />
-              Guide
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Guide
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-lg font-semibold">Data Entry Guide</DialogTitle>
+                  <DialogDescription className="text-sm text-gray-600 leading-relaxed pt-2">
+                    Use the Data Entry Portal to upload disease surveillance data into the system. Choose from three entry methods: manual forms, file uploads (CSV/Excel), or API integration.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="text-gray-400 text-xs mt-4 pt-3 border-t">
+                  This feature is under testing
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardHeader>
         <CardContent>
