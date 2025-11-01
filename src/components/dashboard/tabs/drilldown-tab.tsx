@@ -87,12 +87,12 @@ export default function DrilldownTab() {
         let malaria = null;
 
         // Use cache if it's less than 24 hours old
-        if (cachedDengue && cachedAWD && cacheTimestamp && (now - parseInt(cacheTimestamp)) < cacheMaxAge) {
+        if (cachedDengue && cachedAWD && cachedMalaria && cacheTimestamp && (now - parseInt(cacheTimestamp)) < cacheMaxAge) {
           console.log('Using cached data');
           try {
             dengue = JSON.parse(cachedDengue);
             awd = JSON.parse(cachedAWD);
-            malaria = []; // Malaria disabled for now
+            malaria = JSON.parse(cachedMalaria);
           } catch (parseError) {
             console.warn('Failed to parse cached data, fetching fresh data');
             // Clear corrupted cache
@@ -104,14 +104,13 @@ export default function DrilldownTab() {
         }
 
         // Fetch fresh data if cache is not available
-        if (!dengue || !awd) {
+        if (!dengue || !awd || !malaria) {
           console.log('Fetching fresh data from APIs');
-          [dengue, awd] = await Promise.all([
+          [dengue, awd, malaria] = await Promise.all([
             fetchDengueData(),
             fetchAWDData(),
+            fetchMalariaData(),
           ]);
-          // Malaria is disabled for now
-          malaria = [];
 
           // Try to cache the data with size check
           try {
@@ -172,6 +171,7 @@ export default function DrilldownTab() {
 
         console.log('Dengue data loaded:', dengue?.length || 0, 'records');
         console.log('AWD data loaded:', awd?.length || 0, 'records');
+        console.log('Malaria data loaded:', malaria?.length || 0, 'records');
 
         if (dengue && dengue.length > 0) {
           console.log('Sample dengue record:', dengue[0]);
@@ -191,8 +191,12 @@ export default function DrilldownTab() {
           }
         }
 
-        // Malaria is disabled, set empty array
-        setMalariaData([]);
+        if (malaria && malaria.length > 0) {
+          console.log('Sample malaria record:', malaria[0]);
+          setMalariaData(malaria);
+        } else {
+          console.warn('No malaria data received');
+        }
       } catch (err) {
         console.error('Error loading data:', err);
         setError('Failed to fetch data from APIs. Please check console for details.');
@@ -604,7 +608,7 @@ export default function DrilldownTab() {
     );
   }
 
-  if (error || (dengueData.length === 0 && awdData.length === 0)) {
+  if (error || (dengueData.length === 0 && awdData.length === 0 && malariaData.length === 0)) {
     return (
       <Card className="shadow-md">
         <CardContent className="pt-6">
@@ -615,6 +619,7 @@ export default function DrilldownTab() {
               <div className="text-xs text-gray-500 space-y-1">
                 <p>Dengue API: http://119.148.17.102:5000/dengue/all.json</p>
                 <p>AWD API: http://119.148.17.102:5000/awd/all.json</p>
+                <p>Malaria API: /api/drilldown/malaria</p>
                 <p className="mt-4">This may be due to:</p>
                 <ul className="list-disc list-inside text-left max-w-md mx-auto">
                   <li>CORS restrictions (the API may not allow browser requests)</li>
@@ -645,7 +650,7 @@ export default function DrilldownTab() {
                 <SelectContent>
                   <SelectItem value="dengue">Dengue</SelectItem>
                   <SelectItem value="awd">Acute Watery Diarrhoea</SelectItem>
-                  <SelectItem value="malaria" disabled>Malaria</SelectItem>
+                  <SelectItem value="malaria">Malaria</SelectItem>
                 </SelectContent>
               </Select>
             </div>
