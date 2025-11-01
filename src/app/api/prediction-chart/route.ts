@@ -70,14 +70,14 @@ export async function GET(request: Request) {
     // Fetch historical data from weather tables using weatherPool
     try {
       if (disease === 'malaria_pf' || disease === 'malaria_pv') {
-        // For malaria, always show combined PF + PV historical data
-        // This provides context for both disease types
-        console.log(`Querying malaria_weather for district: ${district}, showing combined PF+PV historical data`);
+        // For malaria, show disease-specific historical data (PF or PV only)
+        const diseaseColumn = disease === 'malaria_pf' ? 'pf' : 'pv';
+        console.log(`Querying malaria_weather for district: ${district}, showing ${disease} historical data`);
         const result = await weatherPool.query(
           `SELECT
             year,
             month,
-            SUM(COALESCE(pf, 0) + COALESCE(pv, 0)) as cases
+            SUM(COALESCE(${diseaseColumn}, 0)) as cases
            FROM malaria_weather
            WHERE LOWER(dis_name) = LOWER($1)
              AND year IS NOT NULL
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
            ORDER BY year, month`,
           [district]
         );
-        console.log(`Fetched ${result.rows.length} rows of combined malaria_weather data`);
+        console.log(`Fetched ${result.rows.length} rows of ${disease} historical data`);
 
         // Transform to date format
         historicalData = result.rows.map((row: any) => ({
@@ -213,21 +213,21 @@ export async function GET(request: Request) {
           const result = await query<{
             year: number;
             month: number;
-            predicted: number;
+            predicted_cases: number;
             uncertainty_low: number;
             uncertainty_high: number;
           }>(
             `SELECT
               year,
               month,
-              predicted,
+              predicted_cases,
               uncertainty_low,
               uncertainty_high
              FROM ${table(predictionsTable)}
              WHERE LOWER(district) = LOWER($1)
                AND year IS NOT NULL
                AND month IS NOT NULL
-               AND predicted IS NOT NULL
+               AND predicted_cases IS NOT NULL
              ORDER BY year DESC, month DESC
              LIMIT 1`,
             [district]
@@ -237,9 +237,9 @@ export async function GET(request: Request) {
             const row = result.rows[0];
             predictionData = {
               report_date: `${row.year}-${String(row.month).padStart(2, '0')}-01`,
-              predicted: row.predicted,
-              uncertainity_low: row.uncertainty_low || row.predicted * 0.8,
-              uncertainity_high: row.uncertainty_high || row.predicted * 1.2,
+              predicted: row.predicted_cases,
+              uncertainity_low: row.uncertainty_low || row.predicted_cases * 0.8,
+              uncertainity_high: row.uncertainty_high || row.predicted_cases * 1.2,
             };
             console.log(`Found ${disease} prediction for ${district}:`, predictionData);
           } else {
