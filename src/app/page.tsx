@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, Suspense } from 'react';
 import Header from '@/components/layout/header';
 import NavigationTabs from '@/components/layout/navigation-tabs';
 import OverviewTab from '@/components/dashboard/tabs/overview-tab';
@@ -61,7 +61,9 @@ export default function Home() {
       <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
       <main ref={mainContentRef} className="flex-1 px-12 sm:px-18 lg:px-36 xl:px-48 2xl:px-72 py-4 sm:py-6 lg:py-8">
         <div className="mx-auto max-w-[1600px]">
-          {renderTabContent()}
+          <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]">Loading...</div>}>
+            {renderTabContent()}
+          </Suspense>
         </div>
       </main>
       <footer className="border-t bg-white px-12 sm:px-18 lg:px-36 xl:px-48 2xl:px-72 py-4">
