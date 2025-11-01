@@ -104,7 +104,8 @@ export default function ModelMetricsCards({ disease, setDisease }: ModelMetricsC
               <SelectContent>
                 <SelectItem value="dengue">Dengue</SelectItem>
                 <SelectItem value="diarrhoea">Diarrhoea</SelectItem>
-                <SelectItem value="malaria" disabled>Malaria</SelectItem>
+                <SelectItem value="malaria_pf">Malaria PF</SelectItem>
+                <SelectItem value="malaria_pv">Malaria PV</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex items-center gap-1">
@@ -150,7 +151,8 @@ export default function ModelMetricsCards({ disease, setDisease }: ModelMetricsC
             <SelectContent>
               <SelectItem value="dengue">Dengue</SelectItem>
               <SelectItem value="diarrhoea">Diarrhoea</SelectItem>
-              <SelectItem value="malaria" disabled>Malaria</SelectItem>
+              <SelectItem value="malaria_pf">Malaria PF</SelectItem>
+              <SelectItem value="malaria_pv">Malaria PV</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex items-center gap-1">

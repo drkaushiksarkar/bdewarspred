@@ -35,6 +35,21 @@ const FEATURE_DESCRIPTIONS: { [key: string]: { label: string; description: strin
     description: 'High humidity levels can affect food preservation and water storage conditions. In tropical regions like Bangladesh, humidity influences bacterial survival in the environment and affects the transmission of gastrointestinal pathogens through contaminated surfaces and food.',
     icon: 'Droplets'
   },
+  'average_temperature': {
+    label: 'Temperature',
+    description: 'Higher temperatures (25-30°C) accelerate mosquito metabolism, reproductive rates, and the replication speed of malaria parasites inside mosquitoes (extrinsic incubation period). This shortens the time between mosquito infection and transmission capability, increasing malaria outbreak risk.',
+    icon: 'Thermometer'
+  },
+  'total_rainfall': {
+    label: 'Rainfall',
+    description: 'Heavy rainfall creates stagnant water pools that serve as breeding grounds for Anopheles mosquitoes, the primary vector for malaria. The lag represents the time needed for mosquito larvae to mature and for malaria transmission to increase in the population.',
+    icon: 'CloudRain'
+  },
+  'relative_humidity': {
+    label: 'Humidity',
+    description: 'Moderate humidity (60-80%) supports Anopheles mosquito survival and malaria parasite development. High humidity extends mosquito lifespan, increasing the probability that infected mosquitoes will survive long enough to transmit malaria parasites to humans.',
+    icon: 'Droplets'
+  },
   'weekly_hospitalised_cases': {
     label: 'Previous Cases',
     description: 'Recent case counts are strong indicators of ongoing transmission chains. The lag captures the typical incubation period for most diseases. A rise in cases indicates active circulation of pathogens and infected vectors in the community, suggesting continued transmission is likely.',
@@ -133,7 +148,8 @@ export async function GET(request: Request) {
     const tableMap: { [key: string]: string } = {
       dengue: 'dengue_climate_influence',
       diarrhoea: 'diarrhoea_climate_influence',
-      malaria: 'malaria_climate_influence',
+      malaria_pf: 'malaria_pf_climate_influence',
+      malaria_pv: 'malaria_pv_climate_influence',
     };
 
     const tableName = tableMap[disease];
@@ -195,6 +211,7 @@ export async function GET(request: Request) {
         WHERE (
           base_var IN ('Avg_Temperature', 'Total_Rainfall', 'Avg_Humidity')
           OR base_var IN ('temperature', 'rainfall', 'humidity')
+          OR base_var IN ('average_temperature', 'total_rainfall', 'relative_humidity')
         )
           AND abs_corr IS NOT NULL
           AND abs_corr > 0

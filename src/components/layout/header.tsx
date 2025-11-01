@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Biohazard, LogOut, Settings, Loader2, Download } from 'lucide-react';
+import { Biohazard, LogOut, Settings, Loader2, Download, User } from 'lucide-react';
 import HelpDrawer from './help-drawer';
 import { useSession, signOut } from 'next-auth/react';
 import {
@@ -38,7 +38,6 @@ interface HeaderProps {
 
 export default function Header({ activeTab, setActiveTab, mainContentRef }: HeaderProps) {
   const { data: session } = useSession();
-  const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
 
   const [isGeneratingPDF, setIsGeneratingPDF] = React.useState(false);
 
@@ -148,16 +147,9 @@ export default function Header({ activeTab, setActiveTab, mainContentRef }: Head
             className="overflow-hidden rounded-full"
           >
             <Avatar>
-              {userAvatar && (
-                <AvatarImage
-                  src={userAvatar.imageUrl}
-                  alt={userAvatar.description}
-                  width={40}
-                  height={40}
-                  data-ai-hint={userAvatar.imageHint}
-                />
-              )}
-              <AvatarFallback>AV</AvatarFallback>
+              <AvatarFallback className="bg-gray-100">
+                <User className="h-5 w-5 text-gray-600" />
+              </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>

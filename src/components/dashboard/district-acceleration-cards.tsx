@@ -115,7 +115,10 @@ export default function DistrictAccelerationCards({ data }: DistrictAcceleration
                         <MapPin className={cn('h-5 w-5', trendInfo.color)} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold text-sm text-gray-900 truncate">
+                        <h3
+                          className="font-semibold text-sm text-gray-900 truncate"
+                          title={district.district}
+                        >
                           {district.district}
                         </h3>
                         <p className="text-xs text-gray-500 truncate">
