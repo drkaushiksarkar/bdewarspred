@@ -29,28 +29,28 @@ export async function GET() {
 
     console.log(`Malaria API: Returning ${result.rows.length} rows from malaria_weather table`);
 
-    // Transform monthly data to match the format expected by drilldown-tab
-    // Convert to date-based format similar to AWD data
-    // Note: Weather data is estimated/placeholder as malaria_weather table doesn't contain climate variables
-    const transformedData = result.rows.map((row: any, index: number) => {
-      // Create a date string from year and month
-      const dateStr = `${row.year}-${String(row.month).padStart(2, '0')}-15`; // Middle of the month
-
-      // Generate estimated weather values based on month (seasonal patterns)
-      // These are typical Bangladesh climate patterns
+    // Transform monthly data to match the format expected by Alert chart
+    // Format needs: epi_week, year, weekly_hospitalised_cases (or daily_cases), district
+    const transformedData = result.rows.map((row: any) => {
+      // Calculate approximate epidemiological week from month
+      // Each month has ~4.33 weeks, so we calculate the week number
       const monthIndex = parseInt(row.month);
-      const estimatedTemp = 20 + (monthIndex > 3 && monthIndex < 10 ? 8 : 0) + Math.sin(monthIndex / 12 * Math.PI * 2) * 3;
-      const estimatedHumidity = 65 + (monthIndex > 5 && monthIndex < 10 ? 15 : 5);
-      const estimatedRainfall = monthIndex >= 6 && monthIndex <= 9 ? 200 + Math.random() * 150 : 50 + Math.random() * 80;
+      const year = parseInt(row.year);
+
+      // Approximate epi week: (month - 1) * 4.33 + 2 (middle of month)
+      // This gives us week numbers from 1-52
+      const epi_week = Math.round((monthIndex - 1) * 4.33 + 2);
+
+      // Convert monthly cases to approximate weekly cases
+      const weekly_cases = (row.total_cases || 0) / 4.33;
 
       return {
-        id: `${row.district}-${row.year}-${row.month}`,
         district: row.district,
-        date: dateStr,
-        weekly_cases: Math.round((row.total_cases || 0) / 4 * 100) / 100, // Approximate weekly from monthly
-        temperature: Math.round(estimatedTemp * 10) / 10,
-        humidity: Math.round(estimatedHumidity * 10) / 10,
-        rainfall: Math.round(estimatedRainfall * 10) / 10,
+        year: year,
+        epi_week: epi_week,
+        weekly_hospitalised_cases: Math.round(weekly_cases * 100) / 100,
+        // Keep additional fields for compatibility with drilldown-tab
+        month: monthIndex,
       };
     });
 
