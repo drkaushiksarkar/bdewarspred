@@ -460,43 +460,63 @@ export async function getDistrictAlertDataFromAPI(
 
     const data = await response.json();
 
-    // Group by district and get the latest month data
+    // Group by district and get the latest week data for target year
     const districtMap = new Map<string, any>();
 
     data.forEach((item: any) => {
       const district = item.district;
-      const year = item.year;
-      const month = item.month;
+      const year = parseInt(item.year);
+      const week = parseInt(item.epi_week);
 
       if (year !== targetYear) return;
 
       const key = district;
       const existing = districtMap.get(key);
 
-      // Keep the latest month data
-      if (!existing || month > existing.month) {
+      // Keep the latest week data
+      if (!existing || week > existing.epi_week) {
         districtMap.set(key, item);
       }
+    });
+
+    // Get historical data for baseline calculation
+    const historicalDataByDistrict = new Map<string, Map<number, number[]>>();
+
+    data.forEach((item: any) => {
+      const district = item.district;
+      const year = parseInt(item.year);
+      const week = parseInt(item.epi_week);
+      const cases = parseFloat(item.weekly_hospitalised_cases) || parseFloat(item.daily_cases) || 0;
+
+      if (year === targetYear) return; // Skip target year for historical baseline
+
+      if (!historicalDataByDistrict.has(district)) {
+        historicalDataByDistrict.set(district, new Map());
+      }
+
+      const districtWeekData = historicalDataByDistrict.get(district)!;
+      if (!districtWeekData.has(week)) {
+        districtWeekData.set(week, []);
+      }
+
+      districtWeekData.get(week)!.push(cases);
     });
 
     // Convert to DistrictWeekData format
     const alertData: DistrictWeekData[] = [];
 
     districtMap.forEach((item, district) => {
-      const cases = parseFloat(item.this_week_actual) || parseFloat(item.this_week_predicted) || 0;
-      const month = item.month;
-      const year = item.year;
+      const cases = parseFloat(item.weekly_hospitalised_cases) || parseFloat(item.daily_cases) || 0;
+      const week = parseInt(item.epi_week);
+      const year = parseInt(item.year);
 
-      // Convert month to approximate week
-      const approximateWeek = Math.round(month * 4.33 - 2);
-
-      // For baseline, we'll use a simple threshold for now
-      // In a real implementation, you'd calculate this from historical data
-      const baseline = 5; // Simple threshold
+      // Calculate baseline from historical data
+      const historicalData = historicalDataByDistrict.get(district)?.get(week) || [];
+      const baseline = calculateBaseline(historicalData, method);
 
       alertData.push({
         district,
-        week: approximateWeek,
+        week,
         year,
         cases,
         baseline,
@@ -658,53 +678,46 @@ export async function getWeeklyNationalDataFromAPI(
 
       return result.sort((a, b) => a.week - b.week);
     } else if (disease === 'malaria') {
-      // Malaria data - group by month and convert to week equivalents
-      // First, group ALL data by year and month to get national totals per year-month
-      const yearMonthMap = new Map<string, { cases: number; predicted: number; }>();
+      // Malaria data - now uses same format as dengue (from malaria_weather table)
+      console.log('Malaria raw data from API:', data.length, 'rows');
+      console.log('Sample data:', data.slice(0, 3));
+
+      // First, group ALL data by year and week to get national totals per year-week
+      const yearWeekMap = new Map<string, number>();
 
       data.forEach((item: any) => {
+        const week = item.epi_week;
         const year = item.year;
-        const month = item.month;
-        const cases = parseFloat(item.this_week_actual) || 0;
-        const predicted = parseFloat(item.this_week_predicted) || 0;
-        const key = `${year}-${month}`;
+        const cases = item.weekly_hospitalised_cases || item.daily_cases || 0;
+        const key = `${year}-${week}`;
 
-        const existing = yearMonthMap.get(key) || { cases: 0, predicted: 0 };
-        yearMonthMap.set(key, {
-          cases: existing.cases + cases,
-          predicted: existing.predicted + predicted
-        });
+        yearWeekMap.set(key, (yearWeekMap.get(key) || 0) + cases);
       });
 
-      // Now group by month (converted to approximate week) and separate target year from historical years
+      console.log('Year-Week map size:', yearWeekMap.size);
+
+      // Now group by week and separate target year from historical years
       const weeklyMap = new Map<number, { cases: number; historicalNationalTotals: number[]; }>();
 
-      yearMonthMap.forEach((monthData, key) => {
-        const [yearStr, monthStr] = key.split('-');
+      yearWeekMap.forEach((nationalTotal, key) => {
+        const [yearStr, weekStr] = key.split('-');
         const year = parseInt(yearStr);
-        const month = parseInt(monthStr);
+        const week = parseInt(weekStr);
 
-        // Convert month to approximate week (mid-month week: month * 4.33 - 2)
-        // This gives us roughly the middle week of each month
-        const approximateWeek = Math.round(month * 4.33 - 2);
-
-        if (!weeklyMap.has(approximateWeek)) {
-          weeklyMap.set(approximateWeek, { cases: 0, historicalNationalTotals: [] });
+        if (!weeklyMap.has(week)) {
+          weeklyMap.set(week, { cases: 0, historicalNationalTotals: [] });
         }
 
-        const weekData = weeklyMap.get(approximateWeek)!;
-
-        // Use actual cases if available, otherwise use predicted
-        const totalCases = monthData.cases > 0 ? monthData.cases : monthData.predicted;
+        const weekData = weeklyMap.get(week)!;
 
         // For target year, use the national total
         if (year === targetYear) {
-          weekData.cases = totalCases;
+          weekData.cases = nationalTotal;
         }
 
         // For historical years, collect national totals for baseline calculation
         if (year !== targetYear) {
-          weekData.historicalNationalTotals.push(totalCases);
+          weekData.historicalNationalTotals.push(nationalTotal);
         }
       });
 
@@ -714,15 +727,20 @@ export async function getWeeklyNationalDataFromAPI(
         // Calculate baseline using the selected method on historical NATIONAL totals
         const baseline = calculateBaseline(weekData.historicalNationalTotals, method);
 
-        // Include all weeks (even with 0 cases) to show complete picture
-        result.push({
-          week,
-          year: targetYear,
-          date: new Date(targetYear, 0, week * 7).toISOString(), // Approximate date
-          cases: weekData.cases || 0,
-          baseline: baseline || 0,
-        });
+        // Only include weeks from target year that have data
+        if (weekData.cases > 0) {
+          result.push({
+            week,
+            year: targetYear,
+            date: new Date(targetYear, 0, week * 7).toISOString(), // Approximate date
+            cases: weekData.cases,
+            baseline: baseline,
+          });
+        }
       });
+
+      console.log('Malaria final result for chart:', result.length, 'data points');
+      console.log('Result data:', result);
 
       return result.sort((a, b) => a.week - b.week);
     } else {
